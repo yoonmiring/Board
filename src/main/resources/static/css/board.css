@@ -1,0 +1,51 @@
+/*기본 틀*/
+main{
+    width: 100%;
+    height: 100%;
+}
+.header{
+    position:relative;
+    width: 100%;
+    height: 10%;
+    background: #000050;
+}
+.board{
+    width: 100%;
+    height: 85%;
+}
+.footer{
+    width: 100%;
+    height: 5%;
+    text-align: center;
+    color: azure;
+    background: #000050;
+    padding-bottom: 0px;
+}
+/*header*/
+.logo{
+    display: inline-block;
+    padding: 0px 0px 0px 10px;
+    width: 500px;
+    height: 100px;
+    color: white;
+}
+.home{
+    display: inline-block;
+    position:absolute; bottom:0px;right:0px;
+    width: 100px;
+    height:25px;
+    color: white;
+}
+
+/*body*/
+table{
+    border: 1px black solid;
+    border-collapse: collapse;
+}
+
+textarea {
+    width: 60%;
+    height: 23em;
+    border: 1px black solid;
+    resize: none;
+}
