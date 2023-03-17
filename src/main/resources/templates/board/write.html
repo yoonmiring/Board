@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/board.css}">
+    <meta charset="UTF-8">
+    <title>글쓰기</title>
+</head>
+<body>
+<div class="board">
+    <form action="/post" method="post">
+        제목:<input type="text" name="title"> <br>
+        작성자:<input type="text" name="writer">
+        비밀번호:<input type="text" name="password"><br>
+        --------------------------------------------<br>
+        <textarea name="content" placeholder="내용을 입력해 주세요." ></textarea> <br>
+
+        <input type="submit" value="등록">
+    </form>
+</div>
+</body>
+</html>
