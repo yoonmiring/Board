@@ -58,7 +58,6 @@ private Long id;
     public String getTitle() {
         return title;
     }
-
     private String title;
     private String content;
     private LocalDateTime createdDate;

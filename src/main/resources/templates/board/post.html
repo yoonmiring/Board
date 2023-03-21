@@ -1,13 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
-    <link rel="stylesheet" type="text/css" th:href="@{/css/board.css}">
     <meta charset="UTF-8">
     <title>글쓰기</title>
+
+    <link rel="stylesheet" type="text/css" th:href="@{/css/board.css}">
 </head>
 <body>
+<script src="post.js"></script>
+<!--haeder부분-->
+<div th:insert="common/header.html" id="header"></div>
+
+<!--body부분-->
 <div class="board">
-    <form action="/post" method="post">
+
+<!--    입력 부분 -->
+    <form action="/board/posts" method="GET">
         제목:<input type="text" name="title"> <br>
         작성자:<input type="text" name="writer">
         비밀번호:<input type="text" name="password"><br>
@@ -17,5 +25,7 @@
         <input type="submit" value="등록">
     </form>
 </div>
+<!--footer부분-->
+<div th:insert="common/footer.html" id="footer"></div>
 </body>
 </html>

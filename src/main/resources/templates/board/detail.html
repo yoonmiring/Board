@@ -2,9 +2,14 @@
 <html lang="en" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>상세보기</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/board.css}">
 </head>
 <body>
+<!--haeder부분-->
+<div th:insert="common/header.html" id="header"></div>
+
+
 <div class="board">
 <h2 th:text="${PostDto.title}"></h2>
 <!--<p th:inline="text">작성일 : [[${#temporals.format(PostDto.createdDate, 'yyyy-MM-dd HH:mm')}]]</p>-->
@@ -33,5 +38,7 @@
 <!-- script -->
 <script th:inline="javascript" th:src="@{/js/post.js}"></script>
 </div>
+<!--footer부분-->
+<div th:insert="common/footer.html" id="footer"></div>
 </body>
 </html>

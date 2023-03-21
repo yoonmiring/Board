@@ -7,6 +7,10 @@
     <title>수정하기</title>
 </head>
 <body>
+<!--haeder부분-->
+<div th:insert="common/header.html" id="header"></div>
+
+
 <div class="board">
 <form th:action="@{'/post/edit/' + ${PostDto.id}}" method="post">
     <input type="hidden" name="_method" value="put"/>
@@ -20,5 +24,7 @@
     <input type="submit" value="수정">
 </form>
 </div>
+<!--footer부분-->
+<div th:insert="common/footer.html" id="footer"></div>
 </body>
 </html>

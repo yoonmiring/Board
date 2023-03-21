@@ -1,73 +1,71 @@
 package com.yoonmin.board.controller;
 
+
 import com.yoonmin.board.domain.dto.PostDto;
 import com.yoonmin.board.service.PostService;
-import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 import java.util.List;
 
-@Controller
-@AllArgsConstructor
+@RestController
+@RequestMapping(value="/")
 public class PostController {
+    @Autowired
     private PostService postService;
 
-
-    @GetMapping("/")
-    public String list(Model model){
-
+//  목록보기
+    @RequestMapping(value = "/board", method = RequestMethod.GET)
+    public ModelAndView list() throws Exception{
+        ModelAndView mv = new ModelAndView("/board/home");
         List<PostDto> postList = postService.getPostlist();
-
-        model.addAttribute("postList", postList);
-        return "board/home.html";
+        mv.addObject("postList", postList);
+        return mv;
     }
 
-
-    @GetMapping("/post")
-    public String write(){
-        return "board/write.html";
+//  글쓰기창 열기
+    @RequestMapping(value = "/board/posts", method = RequestMethod.GET)
+    public String openBoardWrite() throws Exception{
+        return "/board/post";
+    }
+    //글쓰기
+    @RequestMapping(value = "/board/posts", method = RequestMethod.POST)
+    public String insertBoard(PostDto postDto) throws Exception{
+        return "redirect:/board";
     }
 
-    @GetMapping("/post/{no}")
-    public String detail(@PathVariable("no") Long no, Model model) {
-        PostDto postDTO = postService.getPost(no);
+//    글 상세보기
+    @RequestMapping(value = "/board/posts/{boardId}", method=RequestMethod.GET)
+    public ModelAndView openBoardDetail(@PathVariable("boardId") Long boardId) throws Exception {
+        ModelAndView mv = new ModelAndView("detail");
+        PostDto postDTO = postService.getPost(boardId);
 
-        model.addAttribute("PostDto", postDTO);
-        return "board/detail.html";
+        mv.addObject("PostDto", postDTO);
+        return mv;
     }
 
-    @GetMapping("/post/edit/{no}")
-    public String edit(@PathVariable("no") Long no, Model model) {
-        PostDto postDTO = postService.getPost(no);
+//    글 수정하기
 
-        model.addAttribute("PostDto", postDTO);
-        return "board/update.html";
-    }
-
-    @PutMapping("/post/edit/{no}")
-    public String update(PostDto postDTO) {
+    @RequestMapping(value ="/board/posts/{boardId}", method=RequestMethod.PUT)
+    public String savePost(PostDto postDTO) throws Exception {
         postService.savePost(postDTO);
-
-        return "redirect:/";
+        return "redirect:/board";
+    }
+//    글 삭제하기
+    @RequestMapping(value ="/board/posts/{boardId}", method=RequestMethod.DELETE)
+    public String deleteBoard(@PathVariable("boardId") Long boardId) throws Exception{
+        postService.deletePost(boardId);
+        return "redirect:/board";
     }
 
-    @DeleteMapping("/post/{no}")
-    public String delete(@PathVariable("no") Long no) {
-        postService.deletePost(no);
 
-        return "redirect:/";
-    }
+////    검색
+//    @GetMapping("/post/search")
+//    public String search (@RequestParam(value="keyword") String keyword, Model model){
+//        List<PostDto> postDtoList = postService.searchPosts(keyword);
+//        model.addAttribute("postList",postDtoList);
+//        return "board/home.html";
+//    }
 
-    @PostMapping ("/post")
-    public String write(PostDto postDto){
-       postService.savePost(postDto);
 
-       return "redirect:/";
-    }
 }
