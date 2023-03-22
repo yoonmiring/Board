@@ -12,3 +12,19 @@ $(document).ready(function() {
         });
     });
 });
+
+
+$.ajax({
+    url: "/api/posts",
+    method: "POST",
+    data: {
+        title: $("#title").val(),
+        content: $("#content").val()
+    },
+    success: function(data) {
+        // 성공적으로 데이터가 전송되었을 때 실행되는 코드
+    },
+    error: function(error) {
+        // 데이터 전송 중 에러가 발생했을 때 실행되는 코드
+    }
+});
