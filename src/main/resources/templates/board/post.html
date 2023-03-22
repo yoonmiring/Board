@@ -3,11 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <title>글쓰기</title>
-
-    <link rel="stylesheet" type="text/css" th:href="@{/css/board.css}">
+    <link rel="stylesheet" th:href="@{/css/board.css}">
 </head>
 <body>
-<script src="post.js"></script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#postForm').submit(function(event) {
+            event.preventDefault(); // 기본 폼 제출 동작 취소
+
+            $.ajax({
+                url: '/api/board',
+                method: 'POST',
+                data: $('#postForm').serialize(),
+                success: function() {
+                    window.location.href = '/'; // 홈 화면으로 이동
+                }
+            });
+        });
+    });
+</script>
 <!--haeder부분-->
 <div th:insert="common/header.html" id="header"></div>
 
@@ -15,15 +31,18 @@
 <div class="board">
 
 <!--    입력 부분 -->
-    <form action="/board/posts" method="GET">
+    <form action="/board/posts" method="POST">
         제목:<input type="text" name="title"> <br>
         작성자:<input type="text" name="writer">
         비밀번호:<input type="text" name="password"><br>
-        --------------------------------------------<br>
+        -----------------------------------------------------------------------------<br>
         <textarea name="content" placeholder="내용을 입력해 주세요." ></textarea> <br>
 
         <input type="submit" value="등록">
+
     </form>
+
+
 </div>
 <!--footer부분-->
 <div th:insert="common/footer.html" id="footer"></div>

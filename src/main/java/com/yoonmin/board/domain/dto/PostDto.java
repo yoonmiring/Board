@@ -1,7 +1,6 @@
 package com.yoonmin.board.domain.dto;
 
 import com.yoonmin.board.domain.entity.PostEntity;
-import com.yoonmin.board.domain.entity.UserEntity;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -11,75 +10,39 @@ import java.time.LocalDateTime;
 @ToString
 @NoArgsConstructor
 public class PostDto {
-
-//    private Long id;
-//    private String title;
-//    private String content;
-//    private UserEntity authorUsername;
-//    private LocalDateTime createdAt;
-//    private LocalDateTime updatedAt;
-//       public PostEntity toEntity() {
-//        PostEntity postEntity = PostEntity.builder()
-//                .id(id)
-//                .authorUsername(authorUsername)
-//                .title(title)
-//                .content(content)
-//                .build();
-//        return postEntity;
-//    }
-//    @Builder
-//    public PostDto(Long id, String title, String content, UserEntity authorUsername, LocalDateTime createdAt, LocalDateTime updatedAt) {
-//        this.id = id;
-//        this.authorUsername = authorUsername;
-//        this.title = title;
-//        this.content = content;
-//        this.createdAt = createdAt;
-//        this.updatedAt = updatedAt;
-//    }
-//
-//    private Long id;
-//    private String title;
-//    private UserEntity authorUsername;
-//    private LocalDateTime createdAt;
-//    private LocalDateTime updatedAt;
-//
-//    public PostEntity toEntity(){
-//        return PostEntity.builder()
-//                .id(id)
-//                .title(title)
-//                .authorUsername(authorUsername)
-//                .createdAt(createdAt)
-//                .updatedAt(updatedAt)
-//                .build();
-//    }
-private Long id;
-    private String writer;
+    private Long id;
+    private String authorUsername;
 
     public String getTitle() {
         return title;
     }
     private String title;
     private String content;
-    private LocalDateTime createdDate;
-    private LocalDateTime modifiedDate;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+    private Long hits;
 
     public PostEntity toEntity(){
         PostEntity postEntity = PostEntity.builder()
                 .id(id)
-                .writer(writer)
+                .authorUsername(authorUsername)
                 .title(title)
                 .content(content)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .hits(hits)
                 .build();
         return postEntity;
     }
 
     @Builder
-    public PostDto(Long id, String title, String content, String writer, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    public PostDto(Long id, String title, String content, String authorUsername, LocalDateTime createdAt, LocalDateTime updatedAt, Long hits) {
         this.id = id;
-        this.writer = writer;
+        this.authorUsername = authorUsername;
         this.title = title;
         this.content = content;
-        this.createdDate = createdDate;
-        this.modifiedDate = modifiedDate;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.hits = hits;
     }
 }

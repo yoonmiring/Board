@@ -1,5 +1,5 @@
 console.log(PostDto);
-alert('aaaaa');
+
 function openWriteForm() {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', '/board/posts');
