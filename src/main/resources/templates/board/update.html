@@ -3,7 +3,6 @@
 <head>
     <link rel="stylesheet" type="text/css" th:href="@{/css/board.css}">
     <meta charset="UTF-8">
-
     <title>수정하기</title>
 </head>
 <body>
@@ -17,7 +16,7 @@
     <input type="hidden" name="id" th:value="${PostDto.id}"/>
 
     제목 : <input type="text" name="title" th:value="${PostDto.title}"> <br>
-    작성자 : <input type="text" name="writer" th:value="${PostDto.writer}" readonly> <br>
+    작성자 : <input type="text" name="writer" th:value="${PostDto.authorUsername}" readonly> <br>
     --------------------------------------------<br>
     <textarea name="content" th:text="${PostDto.content}"></textarea><br>
 

@@ -7,23 +7,6 @@
 </head>
 <body>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(document).ready(function() {
-        $('#postForm').submit(function(event) {
-            event.preventDefault(); // 기본 폼 제출 동작 취소
-
-            $.ajax({
-                url: '/api/board',
-                method: 'POST',
-                data: $('#postForm').serialize(),
-                success: function() {
-                    window.location.href = '/'; // 홈 화면으로 이동
-                }
-            });
-        });
-    });
-</script>
 <!--haeder부분-->
 <div th:insert="common/header.html" id="header"></div>
 
@@ -41,9 +24,26 @@
         <input type="submit" value="등록">
 
     </form>
-
-
 </div>
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#postForm').submit(function(event) {
+            event.preventDefault(); // 기본 폼 제출 동작 취소
+
+            $.ajax({
+                url: '/board',
+                method: 'POST',
+                data: $('#postForm').serialize(),
+                success: function() {
+                    window.location.href = '/board'; // 홈 화면으로 이동
+                }
+            });
+        });
+    });
+</script>
 <!--footer부분-->
 <div th:insert="common/footer.html" id="footer"></div>
 </body>
