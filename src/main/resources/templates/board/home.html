@@ -55,11 +55,10 @@
                     row.appendChild(cell);
                 });
                 return row;
-
-                const tableBody = document.getElementById('table-body');
-                tableRows.forEach((row) => tableBody.appendChild(row));
             });
 
+            const tableBody = document.getElementById('table-body');
+            tableRows.forEach((row) => tableBody.appendChild(row));
         }
     });
 </script>
