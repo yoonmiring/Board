@@ -15,8 +15,8 @@ import java.util.List;
 @Service
 public class PostService {
     private PostRepository postRepository;
-    private static final int BLOCK_PAGE_NUM_COUNT=10; //페이지 사이즈
-    private static final int PAGE_POST_COUNT=15;//한 페이지당 나올 게시물 수
+    private static final int BLOCK_PAGE_NUM_COUNT = 10; //페이지 사이즈
+    private static final int PAGE_POST_COUNT = 15;//한 페이지당 나올 게시물 수
 
 
     //전체 게시물 목록 조회
@@ -25,12 +25,11 @@ public class PostService {
         List<PostEntity> postEntities = postRepository.findAll();
         List<PostDto> postDtoList = new ArrayList<>();
 
-        for ( PostEntity postEntity : postEntities) {
+        for (PostEntity postEntity : postEntities) {
             PostDto postDTO = PostDto.builder()
                     .id(postEntity.getId())
                     .title(postEntity.getTitle())
-                    .content(postEntity.getContent())
-                    .authorUsername(postEntity.getAuthorUsername())
+                    .username(postEntity.getUsername())
                     .createdAt(postEntity.getCreatedAt())
                     .updatedAt(postEntity.getUpdatedAt())
                     .hits(postEntity.getHits())
@@ -41,7 +40,8 @@ public class PostService {
 
         return postDtoList;
     }
-//    개별 게시물 조회
+
+    //    개별 게시물 조회
     @Transactional
     public PostDto getPost(Long id) {
         Optional<PostEntity> postEntityWrapper = postRepository.findById(id);
@@ -51,21 +51,23 @@ public class PostService {
                 .id(postEntity.getId())
                 .title(postEntity.getTitle())
                 .content(postEntity.getContent())
-                .authorUsername(postEntity.getAuthorUsername())
+                .username(postEntity.getUsername())
                 .createdAt(postEntity.getCreatedAt())
                 .updatedAt(postEntity.getUpdatedAt())
                 .hits(postEntity.getHits())
+                .password(postEntity.getPassword())
                 .build();
 
         return postDto;
     }
+
     //게시물 작성
     @Transactional
     public Long savePost(PostDto postDto) {
         return postRepository.save(postDto.toEntity()).getId();
     }
 
-//게시글 삭제
+    //게시글 삭제
     @Transactional
     public void deletePost(Long id) {
         postRepository.deleteById(id);
@@ -90,10 +92,11 @@ public class PostService {
                 .id(postEntity.getId())
                 .title(postEntity.getTitle())
                 .content(postEntity.getContent())
-                .authorUsername(postEntity.getAuthorUsername())
+                .username(postEntity.getUsername())
                 .createdAt(postEntity.getCreatedAt())
                 .updatedAt(postEntity.getUpdatedAt())
                 .hits(postEntity.getHits())
+                .password(postEntity.getPassword())
                 .build();
     }
 ////페이징

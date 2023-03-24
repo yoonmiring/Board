@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Board</title>
     <link rel="stylesheet" th:href="@{/css/board.css}">
-
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
 
@@ -17,53 +17,51 @@
     <!--    검색 -->
     <form action="/board/posts/{keyword}" method="GET">
         <div>
-            <input name="keyword" type="text" placeholder="검색어를 입력해주세요"> <button>검색</button>
+            <input name="keyword" type="text" placeholder="검색어를 입력해주세요">
+            <button>검색</button>
         </div>
     </form>
 
-<a th:href="@{/board/posts}" class="write">글쓰기</a>
-
+    <a th:href="@{/board/posts}" class="write">글쓰기</a>
     <div>
-    <table class="list">
-        <tr>
-            <th class="one wide">번호</th>
-            <th class="ten wide">글제목</th>
-            <th class="two wide">작성자</th>
-            <th class="three wide">작성일</th>
-            <th class="three wide">수정일자</th>
-            <th class="one wide">조회수</th>
-        </tr>
-<a th:text="${postList}"></a>
+        <table class="list">
+            <tr>
+                <th class="one wide">번호</th>
+                <th class="ten wide">글제목</th>
+                <th class="two wide">작성자</th>
+                <th class="three wide">작성일</th>
+                <th class="three wide">수정일자</th>
+                <th class="one wide">조회수</th>
+            </tr>
 
-        <tbody>
-        <!-- CONTENTS !-->
-        <tr th:each="post : ${postList}">
-            <td>
-                <span th:text="${post.id}"></span>
-            </td>
-            <td>
-                <a th:href="@{'/post/' + ${post.id}}">
-                    <span th:text="${post.title}"></span>
-                </a>
-            </td>
-            <td>
-                <span th:text="${post.authorUsername}"></span>
-            </td>
-            <td>
-                <span th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
-            </td>
-            <td>
-                <span th:text="${#temporals.format(post.updatedAt, 'yyyy-MM-dd HH:mm')}"></span>
-            </td>
-            <td>
-                <span th:text="${post.hits}"></span>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+            <tbody id="table-body">
+            </tbody>
+        </table>
     </div>
 </div>
 <!--footer부분-->
 <div th:insert="common/footer.html" id="footer"></div>
+<script>
+    $.ajax({
+        url: "/board/board",
+        type: "GET",
+        success: function (data) {
+            const tableRows = data.map((rowData) => {
+                const row = document.createElement('tr');
+                const rowValues = Object.values(rowData).filter(value => value !== null);
+                rowValues.forEach((value) => {
+                    const cell = document.createElement('td');
+                    cell.textContent = value;
+                    row.appendChild(cell);
+                });
+                return row;
+
+                const tableBody = document.getElementById('table-body');
+                tableRows.forEach((row) => tableBody.appendChild(row));
+            });
+
+        }
+    });
+</script>
 </body>
 </html>

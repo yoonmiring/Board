@@ -5,44 +5,53 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+
 @Getter
 @Setter
 @ToString
 @NoArgsConstructor
 public class PostDto {
     private Long id;
-    private String authorUsername;
 
-    public String getTitle() {
-        return title;
-    }
     private String title;
+
     private String content;
+
+    private String username;
+
     private LocalDateTime createdAt;
+
     private LocalDateTime updatedAt;
+
     private Long hits;
+
+    private String password;
+
 
     public PostEntity toEntity(){
         PostEntity postEntity = PostEntity.builder()
                 .id(id)
-                .authorUsername(authorUsername)
                 .title(title)
                 .content(content)
+                .username(username)
                 .createdAt(createdAt)
                 .updatedAt(updatedAt)
                 .hits(hits)
+                .password(password)
                 .build();
         return postEntity;
     }
-
+//home화면
     @Builder
-    public PostDto(Long id, String title, String content, String authorUsername, LocalDateTime createdAt, LocalDateTime updatedAt, Long hits) {
+    public PostDto(Long id, String title, String content, String username, LocalDateTime createdAt, LocalDateTime updatedAt, Long hits, String password) {
         this.id = id;
-        this.authorUsername = authorUsername;
+        this.username = username;
         this.title = title;
-        this.content = content;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.hits = hits;
     }
+
+
+
 }
