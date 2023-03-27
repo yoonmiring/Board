@@ -4,12 +4,11 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -29,12 +28,14 @@ public class PostEntity {
 
     @Column(length = 10, nullable = false)
     private String username;
-    @Column(length = 100, nullable = false)
-    private Long hits;
+
+    @Column(length = 100)
+    private long hits = 0L;
     @Column(length = 10, nullable = false)
     private String password;
 
-    @Column(name = "created_at", updatable = false, nullable = false)
+    @Column(name = "created_at",  nullable = false, updatable = false)
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at", updatable = true)
@@ -45,12 +46,12 @@ public class PostEntity {
     @Builder
     public PostEntity(Long id, String title, String content, String username, Long hits, LocalDateTime createdAt, LocalDateTime updatedAt, String password) {
         this.id = id;
-        this.username = username;
         this.title = title;
         this.content = content;
-        this.hits = hits;
+        this.username = username;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.hits = hits;
         this.password= password;
     }
 }

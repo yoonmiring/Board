@@ -1,5 +1,6 @@
 package com.yoonmin.board.controller;
 
+import com.yoonmin.board.domain.dto.BoardDto;
 import com.yoonmin.board.domain.entity.PostEntity;
 import com.yoonmin.board.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,17 +19,17 @@ public class dataController {
     @Autowired
     private PostService postService;
 
-//    main Board
+    //main Board data
     @GetMapping(value = "/board", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<PostDto>> list() throws Exception {
-        List<PostDto> postList = postService.getPostlist();
-        return new ResponseEntity<List<PostDto>>(postList, HttpStatus.OK);
+    public ResponseEntity<List<BoardDto>> list() throws Exception {
+        List<BoardDto> postList = postService.getPostlist();
+        return new ResponseEntity<List<BoardDto>>(postList, HttpStatus.OK);
     }
 
 
     //작성글 등록
     @RequestMapping(value = "/posts/create", method = RequestMethod.POST)
-    public ResponseEntity<Long> savePost(@RequestBody PostDto postDto) {
+    public ResponseEntity<Long> savePost(@ModelAttribute PostDto postDto) {
         Long postId = postService.savePost(postDto);
         return new ResponseEntity<>(postId, HttpStatus.CREATED);
     }

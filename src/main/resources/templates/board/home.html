@@ -49,9 +49,19 @@
             const tableRows = data.map((rowData) => {
                 const row = document.createElement('tr');
                 const rowValues = Object.values(rowData).filter(value => value !== null);
-                rowValues.forEach((value) => {
+                rowValues.forEach((value, index) => {
                     const cell = document.createElement('td');
-                    cell.textContent = value;
+                    if (index === 1) { // title cell
+                        cell.textContent = value;
+                        cell.style.cursor = "pointer";
+                        cell.addEventListener('click', () => {
+                            const id = rowData['id'];
+                            // go to the page with the corresponding id
+                            window.location.href = `/posts/${id}`;
+                        });
+                    } else {
+                        cell.textContent = value;
+                    }
                     row.appendChild(cell);
                 });
                 return row;

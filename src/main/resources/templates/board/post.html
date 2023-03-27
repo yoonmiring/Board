@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>글쓰기</title>
     <link rel="stylesheet" th:href="@{/css/board.css}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
 
@@ -14,20 +15,19 @@
 <div class="board">
 
 <!--    입력 부분 -->
-    <form action="/board/posts" method="POST">
+    <form id="postForm" action="/board/posts" method="POST">
         제목:<input type="text" name="title"> <br>
-        작성자:<input type="text" name="writer">
+        작성자:<input type="text" name="username">
         비밀번호:<input type="text" name="password"><br>
         -----------------------------------------------------------------------------<br>
         <textarea name="content" placeholder="내용을 입력해 주세요." ></textarea> <br>
-
-        <input type="submit" value="등록">
-
     </form>
+    <a th:href="@{/board}" role="button" class="btn-cancle">취소</a>
+    <button type="button" class="btn-save" id="btn-save">등록</button>
 </div>
 
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script>
     $(document).ready(function() {
         $('#postForm').submit(function(event) {
@@ -40,6 +40,30 @@
                 success: function() {
                     window.location.href = '/board'; // 홈 화면으로 이동
                 }
+            });
+        });
+    });
+    $(document).ready(function() {
+        $('#btn-save').on('click', function() {
+            var data = {
+                "title": $('input[name=title]').val(),
+                "username": $('input[name=username]').val(),
+                "password": $('input[name=password]').val(),
+                "content": $('textarea[name=content]').val(),
+                "createdAt": new Date().toISOString(),
+                "updatedAt": null
+            };
+            $.ajax({
+                type:'POST',
+                url:'/board/posts/create',
+                dataType:'json',
+                contentType:'application/json; charset=utf-8',
+                data:JSON.stringify(data)
+            }).done(function (){
+                alert('등록 완료');
+                window.location.href="/board";
+            }).fail(function (error){
+                alert(JSON.stringify(error));
             });
         });
     });
