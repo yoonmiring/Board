@@ -26,20 +26,38 @@ public class dataController {
         return new ResponseEntity<List<BoardDto>>(postList, HttpStatus.OK);
     }
 
-
     //작성글 등록
     @RequestMapping(value = "/posts/create", method = RequestMethod.POST)
-    public ResponseEntity<Long> savePost(@ModelAttribute PostDto postDto) {
+    public ResponseEntity<Long> savePost(@RequestBody PostDto postDto) throws Exception {
+        if (postDto.getContent() == null) {
+            postDto.setContent("");
+        }
         Long postId = postService.savePost(postDto);
         return new ResponseEntity<>(postId, HttpStatus.CREATED);
     }
 
-    //글 수정하기
-    @RequestMapping(value = "/posts/{boardId}", method = RequestMethod.PUT)
-    public String updatePost(PostDto postDTO, @PathVariable Long boardId) throws Exception {
-        postService.savePost(postDTO);
-        return "redirect:/board";
+    //글 상세 불러오기
+    @GetMapping(value = "/posts", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<PostDto> getPost(@RequestBody Long boardId) throws Exception {
+        PostDto postDTO = postService.getPost(boardId);
+        return new ResponseEntity<PostDto>(postDTO, HttpStatus.OK);
     }
+
+    //글 수정하기
+    @PutMapping(value = "/posts/edit/{boardId}")
+    public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDTO, @PathVariable Long boardId) throws Exception {
+        PostDto postDTOResponse = postService.updatePost(boardId, postDTO);
+
+        return new ResponseEntity<PostDto>(postDTOResponse, HttpStatus.OK);
+    }
+
+//    @RequestMapping(value = "/posts/edit/{boardId}", method = RequestMethod.PUT)
+//    public ResponseEntity<Long> updatePost(@RequestBody PostDto postDto) throws Exception {
+//        Long postId = postService.savePost(postDto);
+//        return new ResponseEntity<>(postId, HttpStatus.CREATED);
+//    }
+
+
 
     //글 삭제하기
     @DeleteMapping(value = "/posts/{boardId}")

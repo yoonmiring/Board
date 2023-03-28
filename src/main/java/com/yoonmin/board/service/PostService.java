@@ -5,6 +5,8 @@ import com.yoonmin.board.domain.dto.PostDto;
 import com.yoonmin.board.domain.entity.PostEntity;
 import com.yoonmin.board.domain.repository.PostRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -14,11 +16,13 @@ import java.util.List;
 
 @AllArgsConstructor
 @Service
+
 public class PostService {
+
     private final PostRepository postRepository;
     private static final int BLOCK_PAGE_NUM_COUNT = 10; //페이지 사이즈
     private static final int PAGE_POST_COUNT = 15;//한 페이지당 나올 게시물 수
-    private com.yoonmin.board.domain.dto.BoardDto BoardDto;
+
 
 
     //전체 게시물 목록 조회
@@ -52,6 +56,7 @@ public class PostService {
         PostDto postDto = PostDto.builder()
                 .id(postEntity.getId())
                 .title(postEntity.getTitle())
+                .content(postEntity.getContent())
                 .username(postEntity.getUsername())
                 .createdAt(postEntity.getCreatedAt())
                 .updatedAt(postEntity.getUpdatedAt())
@@ -73,7 +78,20 @@ public class PostService {
         postRepository.deleteById(id);
     }
 
+//게시물 수정
+    @Transactional
+    public PostDto updatePost(Long id, PostDto postDto){
+        Optional<PostEntity> byId = postRepository.findById(id);
+        PostEntity post = getPost(id).toEntity();
 
+
+        post.changeTitle(postDto.getTitle());
+        post.changeContents(postDto.getContent());
+
+        return PostDto.builder()
+                .id(post.getId())
+                .build();
+    }
 //    게시글 검색
     @Transactional
     public List<BoardDto> searchPosts(String keyword) {

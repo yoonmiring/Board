@@ -15,7 +15,7 @@
 <div class="board">
 
 <!--    입력 부분 -->
-    <form id="postForm" action="/board/posts" method="POST">
+    <form id="postForm" action="/board/posts/create" method="POST">
         제목:<input type="text" name="title"> <br>
         작성자:<input type="text" name="username">
         비밀번호:<input type="text" name="password"><br>
@@ -51,7 +51,8 @@
                 "password": $('input[name=password]').val(),
                 "content": $('textarea[name=content]').val(),
                 "createdAt": new Date().toISOString(),
-                "updatedAt": null
+                "updatedAt": new Date().toISOString(),
+                "hits": 0
             };
             $.ajax({
                 type:'POST',

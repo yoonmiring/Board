@@ -17,9 +17,6 @@ public class CommentEntity {
     @Column(name = "content")
     private String content;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "author_username")
-    private UserEntity authorUsername;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "post_id")

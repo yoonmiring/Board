@@ -27,22 +27,19 @@ public class modelAndViewController {
         return mv;
     }
 
-//        @RequestMapping(value = "/board/posts", method = RequestMethod.POST, consumes ="application/json")
-//    public String insertBoard(PostDto postDto) throws Exception{
-//        postService.savePost(postDto);
-//        return "redirect:/board";
-//    }
     //글 상세 화면
-    @RequestMapping(value = "/post/{post_id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/posts/{post_id}", method = RequestMethod.GET)
+    @ResponseBody()
     public ModelAndView openBoardDetail(@PathVariable("post_id") Long boardId) throws Exception {
-        ModelAndView mv = new ModelAndView("/board/detail");
+        ModelAndView mv = new ModelAndView("board/detail");
         PostDto postDTO = postService.getPost(boardId);
         mv.addObject("PostDto", postDTO);
         return mv;
     }
 
     //글 수정 화면
-    @RequestMapping(value = "/post/edit/{post_id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/posts/edit/{post_id}", method = RequestMethod.GET)
+    @ResponseBody()
     public ModelAndView openBoardUpdate(@PathVariable("post_id") Long boardId) throws Exception {
         ModelAndView mv = new ModelAndView("/board/update");
         PostDto postDTO = postService.getPost(boardId);

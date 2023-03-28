@@ -49,9 +49,16 @@ public class PostEntity {
         this.title = title;
         this.content = content;
         this.username = username;
+        this.hits = hits;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.hits = hits;
-        this.password= password;
+        this.password = password;
+    }
+
+    public void changeTitle(String title) {
+        this.title = title;
+    }
+    public void changeContents(String content) {
+        this.content = content;
     }
 }

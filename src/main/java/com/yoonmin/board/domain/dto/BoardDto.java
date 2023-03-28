@@ -25,6 +25,7 @@ public class BoardDto {
     private LocalDateTime updatedAt;
 
     private Long hits;
+
     private String password;
 
 

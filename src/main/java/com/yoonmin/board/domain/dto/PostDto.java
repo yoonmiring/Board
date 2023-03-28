@@ -2,6 +2,7 @@ package com.yoonmin.board.domain.dto;
 
 import com.yoonmin.board.domain.entity.PostEntity;
 import lombok.*;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 @Setter
 @ToString
 @NoArgsConstructor
+@Component
 public class PostDto {
     private Long id;
 
@@ -28,20 +30,32 @@ public class PostDto {
     private String password;
 
 
+//    public PostEntity toEntity(){
+//        PostEntity postEntity = PostEntity.builder()
+//                .id(id)
+//                .title(title)
+//                .content(content)
+//                .username(username)
+//                .createdAt(createdAt)
+//                .updatedAt(updatedAt)
+//                .hits(hits)
+//                .password(password)
+//                .build();
+//        return postEntity;
+//    }
     public PostEntity toEntity(){
-        PostEntity postEntity = PostEntity.builder()
-                .id(id)
-                .title(title)
-                .content(content)
-                .username(username)
-                .createdAt(createdAt)
-                .updatedAt(updatedAt)
-                .hits(hits)
-                .password(password)
-                .build();
+        PostEntity.PostEntityBuilder builder = PostEntity.builder();
+        builder.id(id);
+        builder.title(title);
+        builder.content(content);
+        builder.username(username);
+        builder.createdAt(createdAt);
+        builder.updatedAt(updatedAt);
+        builder.hits(hits);
+        builder.password(password);
+        PostEntity postEntity = builder.build();
         return postEntity;
     }
-
     @Builder
     public PostDto(Long id, String title, String content, String username, LocalDateTime createdAt, LocalDateTime updatedAt, long hits, String password) {
         this.id = id;
