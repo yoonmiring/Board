@@ -35,11 +35,14 @@
             $.ajax({
                 type: "PUT",
                 url: "/board/posts/edit/" + post_id,
-                data: {
+                dataType:'json',
+                contentType:'application/json; charset=utf-8',
+                data: JSON.stringify({
                     title: title,
                     content: content
-                },
+                }),
                 success: function(result) {
+                    alert('수정 완료');
                     window.location.href = "/board/detail/" + post_id;
                 },
                 error: function(xhr, status, error) {
