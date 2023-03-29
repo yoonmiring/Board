@@ -23,14 +23,20 @@
 
     <!-- 수정/삭제 -->
     <div>
-        <form th:action="@{'edit/' + ${PostDto.id}}" method="GET">
+        <span>
+        <form th:action="@{'edit/' + ${PostDto.id}}" method="get">
             <button type="submit">수정</button>
         </form>
-
-        <form id="delete-form" th:action="@{'/posts/' + ${PostDto.id}}" method="post">
+        </span>
+        <span>
+        <form th:action="@{'/posts' + ${PostDto.id}}" method="post">
             <input type="hidden" name="_method" value="delete"/>
-            <button id="delete-btn">삭제</button>
+            <input type="hidden" name="postId" th:value="${PostDto.id}"/>
+
+            <button type="button" class="btn-delete" id="btn-delete">삭제</button>
         </form>
+        </span>
+
     </div>
 </div>
 <!--footer부분-->
@@ -51,6 +57,23 @@
                 console.log(error);
             }
         });
+    });
+    $("#btn-delete").click(function() {
+        var post_id = $("[name=postId]").val();
+        if (confirm('게시물을 삭제하시겠습니까?')) {
+            $.ajax({
+                type: "DELETE",
+                url: `/board/posts/${post_id}`,
+                method: "DELETE",
+                success: function(response) {
+                    alert('삭제 완료');
+                    window.location.href = "/board";
+                },
+                error: function(xhr, status, error) {
+                    console.log(error);
+                }
+            });
+        }
     });
 </script>
 </body>

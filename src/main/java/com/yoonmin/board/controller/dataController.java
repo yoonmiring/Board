@@ -50,18 +50,10 @@ public class dataController {
         return new ResponseEntity<PostDto>(updatePost, HttpStatus.OK);
     }
 
-//    @RequestMapping(value = "/posts/edit/{boardId}", method = RequestMethod.PUT)
-//    public ResponseEntity<Long> updatePost(@RequestBody PostDto postDto) throws Exception {
-//        Long postId = postService.savePost(postDto);
-//        return new ResponseEntity<>(postId, HttpStatus.CREATED);
-//    }
-
-
-
     //글 삭제하기
-    @DeleteMapping(value = "/posts/{boardId}")
-    public String deletePost(@PathVariable("boardId") Long boardId) throws Exception {
-        postService.deletePost(boardId);
+    @DeleteMapping(value = "/posts/{postId}")
+    public String deletePost(@PathVariable("postId") Long postId) throws Exception {
+        postService.deletePost(postId);
         return "redirect:/board";
     }
 }
