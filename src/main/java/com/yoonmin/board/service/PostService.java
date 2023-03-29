@@ -10,18 +10,22 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
 @AllArgsConstructor
 @Service
-
 public class PostService {
 
     private final PostRepository postRepository;
     private static final int BLOCK_PAGE_NUM_COUNT = 10; //페이지 사이즈
     private static final int PAGE_POST_COUNT = 15;//한 페이지당 나올 게시물 수
+    @Autowired
+    private EntityManager entityManager;
+
 
 
 
@@ -78,20 +82,18 @@ public class PostService {
         postRepository.deleteById(id);
     }
 
-//게시물 수정
+    //게시물 수정
     @Transactional
     public PostDto updatePost(Long id, PostDto postDto){
         Optional<PostEntity> byId = postRepository.findById(id);
-        PostEntity post = getPost(id).toEntity();
-
-
-        post.changeTitle(postDto.getTitle());
-        post.changeContents(postDto.getContent());
-
+        PostEntity updatePost = byId.orElseThrow(() -> new EntityNotFoundException("해당 게시글이 없습니다."));
+        updatePost.update(postDto.getTitle(), postDto.getContent());
         return PostDto.builder()
-                .id(post.getId())
+                .id(updatePost.getId())
                 .build();
     }
+
+
 //    게시글 검색
     @Transactional
     public List<BoardDto> searchPosts(String keyword) {

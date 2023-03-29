@@ -1,9 +1,6 @@
 package com.yoonmin.board.domain.entity;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 
@@ -12,6 +9,7 @@ import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Setter
 @Entity
 @Table(name = "post")
 public class PostEntity {
@@ -61,4 +59,10 @@ public class PostEntity {
     public void changeContents(String content) {
         this.content = content;
     }
+
+    public void update(String title, String content){
+        this.title = title;
+        this.content = content;
+    }
+
 }

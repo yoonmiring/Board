@@ -44,11 +44,10 @@ public class dataController {
     }
 
     //글 수정하기
-    @PutMapping(value = "/posts/edit/{boardId}")
-    public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDTO, @PathVariable Long boardId) throws Exception {
-        PostDto postDTOResponse = postService.updatePost(boardId, postDTO);
-
-        return new ResponseEntity<PostDto>(postDTOResponse, HttpStatus.OK);
+    @PutMapping(value = "/posts/edit/{postId}")
+    public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDTO, @PathVariable() Long postId) throws Exception {
+        PostDto updatePost = postService.updatePost(postId, postDTO);
+        return new ResponseEntity<PostDto>(updatePost, HttpStatus.OK);
     }
 
 //    @RequestMapping(value = "/posts/edit/{boardId}", method = RequestMethod.PUT)
