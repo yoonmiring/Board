@@ -12,15 +12,18 @@
 
 
 <div class="board">
-    <h2 th:text="${PostDto.title}"></h2>
-        작성일자: <a th:text="${PostDto.createdAt}"></a>
-        (<a th:text="${PostDto.updatedAt}"></a>)<br>
-        조회수: <a th:text="${PostDto.hits}"></a>
-        작성자: <a th:text="${PostDto.username}"></a>
-    <p> ------------------------------------------------------------------</p>
-    <p th:text="${PostDto.content}"></p>
-    <p> ------------------------------------------------------------------</p>
+    <div>
+        <h2 class="post-title"></h2>
+        작성일자: <a class="post-created-at"></a>
+        (<a class="post-updated-at"></a>)<br>
+        조회수: <a class="post-hits"></a>
+        작성자: <a class="post-username"></a>
+        <p> ------------------------------------------------------------------</p>
+        <p class="post-content"></p>
+        <p> ------------------------------------------------------------------</p>
+    </div>
 
+</div>
     <!-- 수정/삭제 -->
     <div>
         <span>
@@ -43,6 +46,27 @@
 <div th:insert="common/footer.html" id="footer"></div>
 
 <script>
+    $(document).ready(function() {
+        var postId = 1;
+        $.ajax({
+            url: "/board/posts/" + postId,
+            type: "GET",
+            dataType: "json",
+            success: function(data) {
+                $(".post-title").text(data.title);
+                $(".post-created-at").text(data.createdAt);
+                $(".post-updated-at").text(data.updatedAt);
+                $(".post-hits").text(data.hits);
+                $(".post-username").text(data.username);
+                $(".post-content").text(data.content);
+            },
+            error: function(xhr, status, error) {
+                console.log(xhr);
+                console.log(status);
+                console.log(error);
+            }
+        });
+    });
     $("#edit-form").submit(function(event) {
 
         $.ajax({
