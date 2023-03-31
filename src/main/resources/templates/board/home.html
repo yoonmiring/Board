@@ -7,24 +7,32 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-
 <!--haeder부분-->
 <div th:insert="common/header.html" id="header"></div>
 
 <!--body부분-->
 <div class="board">
 
-    <!--    검색 -->
+    <!-- 검색 -->
     <form action="/board/posts/{keyword}" method="GET">
-        <div>
-            <input name="keyword" type="text" placeholder="검색어를 입력해주세요">
-            <button>검색</button>
-        </div>
+        <span>
+            <select id="search-target" name="target">
+            <option value="title">제목</option>
+            <option value="username">작성자</option>
+        </select>
+        </span>
+        <span>
+            <input id="keyword" name="keyword" type="text" placeholder="검색어를 입력해주세요">
+            <button id="search-button">검색</button>
+        </span>
     </form>
 
+    <!--글쓰기 버튼-->
     <a th:href="@{/board/posts}" class="write">글쓰기</a>
+
+    <!-- 테이블 부분-->
     <div>
-        <table class="list">
+        <table class="table">
             <tr>
                 <th class="one wide">번호</th>
                 <th class="ten wide">글제목</th>
@@ -39,36 +47,168 @@
         </table>
     </div>
 </div>
+
 <!--footer부분-->
 <div th:insert="common/footer.html" id="footer"></div>
-<script>
-    $.ajax({
-        url: "/board/board",
-        type: "GET",
-        success: function (data) {
-            const tableRows = data.map((rowData) => {
-                const row = document.createElement('tr');
-                const rowValues = Object.values(rowData).filter(value => value !== null);
-                rowValues.forEach((value, index) => {
-                    const cell = document.createElement('td');
-                    if (index === 1) { // title cell
-                        cell.textContent = value;
-                        cell.style.cursor = "pointer";
-                        cell.addEventListener('click', () => {
-                            const id = rowData['id'];
-                            // go to the page with the corresponding id
-                            window.location.href = `/posts/${id}`;
-                        });
-                    } else {
-                        cell.textContent = value;
-                    }
-                    row.appendChild(cell);
-                });
-                return row;
-            });
 
-            const tableBody = document.getElementById('table-body');
-            tableRows.forEach((row) => tableBody.appendChild(row));
+<script>
+    // $.ajax({
+    //     url: "/board/board",
+    //     type: "GET",
+    //     success: function (data) {
+    //         const tableRows = data.map((rowData) => {
+    //             const row = document.createElement('tr');
+    //             const rowValues = Object.values(rowData).filter(value => value !== null);
+    //             rowValues.forEach((value, index) => {
+    //                 const cell = document.createElement('td');
+    //                 if (index === 1) { // title cell
+    //                     cell.textContent = value;
+    //                     cell.style.cursor = "pointer";
+    //                     cell.addEventListener('click', () => {
+    //                         const id = rowData['id'];
+    //                         // go to the page with the corresponding id
+    //                         window.location.href = `/posts/${id}`;
+    //                     });
+    //                 } else {
+    //                     cell.textContent = value;
+    //                 }
+    //                 row.appendChild(cell);
+    //             });
+    //             return row;
+    //         });
+    //
+    //         const tableBody = document.getElementById('table-body');
+    //         tableRows.forEach((row) => tableBody.appendChild(row));
+    //     }
+    // });
+    $(document).ready(function () {
+        const tableBody = document.getElementById('table-body');
+        $.ajax({
+            url: "/api/board",
+            type: "GET",
+            success: function (data) {
+                const tableRows = data.map((rowData) => {
+                    const row = document.createElement('tr');
+                    const rowValues = Object.values(rowData).filter(value => value !== null);
+                    rowValues.forEach((value, index) => {
+                        const cell = document.createElement('td');
+                        if (index === 1) { // 타이틀 셀
+                            cell.textContent = value;
+                            cell.style.cursor = "pointer";
+                            row.addEventListener('click', (event) => {
+                                if (event.target === cell) {
+                                    const id = rowData['id'];
+                                    // 해당 id가 있는 페이지로 이동합니다
+                                    window.location.href = `/posts/${id}`;
+                                }
+                            });
+                        } else {
+                            cell.textContent = value;
+                        }
+                        row.appendChild(cell);
+                    });
+                    return row;
+                });
+                tableRows.forEach((row) => tableBody.appendChild(row));
+            }
+        });
+    });
+    $(document).ready(function () {
+        const $searchButton = $('#search-button');
+        const $searchTarget = $('#search-target');
+        const $keyword = $('#keyword');
+
+        $searchButton.click(function () {
+            const keyword = $keyword.val();
+            const target = $searchTarget.val();
+
+            if (target === 'title') {// 제목으로 검색
+                searchByTitle(keyword);
+            } else if (target === 'username') {// 작성자로 검색
+                searchByUsername(keyword);
+            }
+        });
+
+        function searchByTitle(keyword) {
+            $.ajax({
+                url: `/board/search?keyword=${keyword}&target=title`,
+                type: "GET",
+                success: function (data) {
+                    const tableBody = document.getElementById('table-body');
+                    tableBody.innerHTML = '';
+                    if (data.length === 0) {
+                        const row = document.createElement('tr');
+                        const cell = document.createElement('td');
+                        cell.colSpan = 6;
+                        cell.textContent = '검색 결과가 없습니다.';
+                        row.appendChild(cell);
+                        tableBody.appendChild(row);
+                    } else {
+                        const tableRows = data.map((rowData) => {
+                            const row = document.createElement('tr');
+                            const rowValues = Object.values(rowData).filter(value => value !== null);
+                            rowValues.forEach((value, index) => {
+                                const cell = document.createElement('td');
+                                if (index === 1) { // title cell
+                                    cell.textContent = value;
+                                    cell.style.cursor = "pointer";
+                                    cell.addEventListener('click', () => {
+                                        const id = rowData['id'];
+                                        // go to the page with the corresponding id
+                                        window.location.href = `/posts/${id}`;
+                                    });
+                                } else {
+                                    cell.textContent = value;
+                                }
+                                row.appendChild(cell);
+                            });
+                            return row;
+                        });
+                        tableRows.forEach((row) => tableBody.appendChild(row));
+                    }
+                }
+            });
+        }
+
+        function searchByUsername(keyword) {
+            $.ajax({
+                url: `/board/search?keyword=${keyword}&target=username`,
+                type: "GET",
+                success: function (data) {
+                    const tableBody = document.getElementById('table-body');
+                    tableBody.innerHTML = '';
+                    if (data.length === 0) {
+                        const row = document.createElement('tr');
+                        const cell = document.createElement('td');
+                        cell.colSpan = 6;
+                        cell.textContent = '검색 결과가 없습니다.';
+                        row.appendChild(cell);
+                        tableBody.appendChild(row);
+                    } else {
+                        const tableRows = data.map((rowData) => {
+                            const row = document.createElement('tr');
+                            const rowValues = Object.values(rowData).filter(value => value !== null);
+                            rowValues.forEach((value, index) => {
+                                const cell = document.createElement('td');
+                                if (index === 1) { // title cell
+                                    cell.textContent = value;
+                                    cell.style.cursor = "pointer";
+                                    cell.addEventListener('click', () => {
+                                        const id = rowData['id'];
+                                        // go to the page with the corresponding id
+                                        window.location.href = `/posts/${id}`;
+                                    });
+                                } else {
+                                    cell.textContent = value;
+                                }
+                                row.appendChild(cell);
+                            });
+                            return row;
+                        });
+                        tableRows.forEach((row) => tableBody.appendChild(row));
+                    }
+                }
+            });
         }
     });
 </script>

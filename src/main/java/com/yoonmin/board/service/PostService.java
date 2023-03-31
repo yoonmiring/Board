@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
@@ -23,10 +24,6 @@ public class PostService {
     private final PostRepository postRepository;
     private static final int BLOCK_PAGE_NUM_COUNT = 10; //페이지 사이즈
     private static final int PAGE_POST_COUNT = 15;//한 페이지당 나올 게시물 수
-    @Autowired
-    private EntityManager entityManager;
-
-
 
 
     //전체 게시물 목록 조회
@@ -64,12 +61,18 @@ public class PostService {
                 .username(postEntity.getUsername())
                 .createdAt(postEntity.getCreatedAt())
                 .updatedAt(postEntity.getUpdatedAt())
-                .hits(postEntity.getHits())
+                .hits(postEntity.getHits()+1)
                 .build();
 
         return postDto;
     }
-
+//    //조회수 증가
+//    @Transactional
+//    public void updateHits(Long id, BoardDto boardDto){
+//        Optional<PostEntity> byId = postRepository.findById(id);
+//        PostEntity updateHits = byId.orElseThrow(() -> new EntityNotFoundException("해당 게시글이 존재하지 않습니다."));
+//        updateHits.updateHits(updateHits.getHits());
+//    }
     //게시물 작성
     @Transactional
     public Long savePost(PostDto postDto) {
@@ -86,21 +89,41 @@ public class PostService {
     @Transactional
     public PostDto updatePost(Long id, PostDto postDto){
         Optional<PostEntity> byId = postRepository.findById(id);
-        PostEntity updatePost = byId.orElseThrow(() -> new EntityNotFoundException("해당 게시글이 없습니다."));
+        PostEntity updatePost = byId.orElseThrow(() -> new EntityNotFoundException("해당 게시글이 존재하지 않습니다."));
         updatePost.update(postDto.getTitle(), postDto.getContent());
         return PostDto.builder()
                 .id(updatePost.getId())
                 .build();
     }
 
-
 //    게시글 검색
-    @Transactional
-    public List<BoardDto> searchPosts(String keyword) {
-        List<PostEntity> postEntities = postRepository.findByTitleContaining(keyword);
-        List<BoardDto> postDtoList = new ArrayList<>();
+//    @Transactional
+//    public List<BoardDto> searchBoard(String keyword) {
+//
+//        List<PostEntity> postEntities = postRepository.findByTitleContaining(keyword);
+//        List<BoardDto> postDtoList = new ArrayList<>();
+//
+//        if (postEntities.isEmpty()) return postDtoList;
+//
+//        for (PostEntity postEntity : postEntities) {
+//            postDtoList.add(this.convertEntityToDto(postEntity));
+//        }
+//        return postDtoList;
+//    }
 
-        if (postEntities.isEmpty()) return postDtoList;
+    @Transactional
+    public List<BoardDto> searchBoard(String keyword, String target) {
+        List<PostEntity> postEntities;
+
+        if (target.equals("title")) {
+            postEntities = postRepository.findByTitleContaining(keyword);
+        } else if (target.equals("username")) {
+            postEntities = postRepository.findByUsernameContaining(keyword);
+        } else {
+            postEntities = Collections.emptyList();
+        }
+
+        List<BoardDto> postDtoList = new ArrayList<>();
 
         for (PostEntity postEntity : postEntities) {
             postDtoList.add(this.convertEntityToDto(postEntity));
@@ -108,6 +131,7 @@ public class PostService {
 
         return postDtoList;
     }
+
 
     private BoardDto convertEntityToDto(PostEntity postEntity) {
         return BoardDto.builder()

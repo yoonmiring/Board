@@ -45,18 +45,19 @@
     });
     $(document).ready(function() {
         $('#btn-save').on('click', function() {
+            var now = new Date().toISOString();
             var data = {
                 "title": $('input[name=title]').val(),
                 "username": $('input[name=username]').val(),
                 "password": $('input[name=password]').val(),
                 "content": $('textarea[name=content]').val(),
-                "createdAt": new Date().toISOString(),
-                "updatedAt": new Date().toISOString(),
+                "createdAt": now,
+                "updatedAt": now,
                 "hits": 0
             };
             $.ajax({
                 type:'POST',
-                url:'/board/posts/create',
+                url:'/api/posts/create',
                 dataType:'json',
                 contentType:'application/json; charset=utf-8',
                 data:JSON.stringify(data)

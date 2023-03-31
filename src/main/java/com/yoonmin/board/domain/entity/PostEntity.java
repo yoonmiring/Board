@@ -65,4 +65,8 @@ public class PostEntity {
         this.content = content;
     }
 
+    public void updateHits(Long hits){
+        this.hits = hits;
+    }
+
 }

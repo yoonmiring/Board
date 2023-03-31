@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping(value="/board")
+@RequestMapping(value="/api")
 public class dataController {
     @Autowired
     private PostService postService;
@@ -49,7 +49,7 @@ public class dataController {
     //글 수정하기
     @PutMapping(value = "/posts/edit/{postId}")
     public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDTO, @PathVariable() Long postId) throws Exception {
-        PostDto updatePost = postService.updatePost(postId, postDTO);
+        PostDto updatePost =  postService.updatePost(postId, postDTO);
         return new ResponseEntity<PostDto>(updatePost, HttpStatus.OK);
     }
 

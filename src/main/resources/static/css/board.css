@@ -10,7 +10,7 @@ main{
     background: #000050;
 }
 .board{
-    position:relative;
+    position:static;
     width: 100%;
     height: 85%;
 }
@@ -41,12 +41,18 @@ main{
 /*body*/
 .write{
     width: 100px;
+    display: inline-block;
     position:absolute; right:0px;
 }
-table{
-    width: 800px;
+.board{
+    width:1500px;
+}
+.table{
+    margin-top: 50px;
+    width: 1000px;
     border: 1px solid black;
     border-collapse: collapse;
+    position: center;
 }
 th, td{
     border: 1px solid black;

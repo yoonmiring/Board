@@ -2,6 +2,7 @@ package com.yoonmin.board.controller;
 
 import com.yoonmin.board.domain.dto.BoardDto;
 import com.yoonmin.board.domain.dto.PostDto;
+import com.yoonmin.board.domain.repository.PostRepository;
 import com.yoonmin.board.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -47,13 +48,11 @@ public class modelAndViewController {
         return mv;
     }
 
-
     //검색 화면
-    @RequestMapping(value = "/board/posts/{keyword}", method = RequestMethod.GET)
-    public ModelAndView searchKeyword(@RequestParam(value = "keyword") String keyword) throws Exception {
-        ModelAndView mv = new ModelAndView("/board/home");
-        List<BoardDto> postDtoList = postService.searchPosts(keyword);
-        mv.addObject("postList", postDtoList);
+    @RequestMapping(value = "/board/search?keyword={keyword}", method = RequestMethod.GET)
+    public ModelAndView searchKeyword(@PathVariable(value = "keyword") String keyword, @RequestParam(value = "target") String target) throws Exception {        ModelAndView mv = new ModelAndView("/board/home");
+        List<BoardDto> postSearchList = postService.searchBoard(keyword,target);
+        mv.addObject("postList", postSearchList);
         return mv;
     }
 
