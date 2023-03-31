@@ -14,19 +14,16 @@
 <div class="board">
 
     <!-- 검색 -->
-    <form action="/board/posts/{keyword}" method="GET">
-        <span>
+    <div>
+        <form>
             <select id="search-target" name="target">
-            <option value="title">제목</option>
-            <option value="username">작성자</option>
-        </select>
-        </span>
-        <span>
+                <option value="title">제목</option>
+                <option value="username">작성자</option>
+            </select>
             <input id="keyword" name="keyword" type="text" placeholder="검색어를 입력해주세요">
-            <button id="search-button">검색</button>
-        </span>
-    </form>
-
+            <button id="search-button" type="button">검색</button>
+        </form>
+    </div>
     <!--글쓰기 버튼-->
     <a th:href="@{/board/posts}" class="write">글쓰기</a>
 
@@ -52,35 +49,6 @@
 <div th:insert="common/footer.html" id="footer"></div>
 
 <script>
-    // $.ajax({
-    //     url: "/board/board",
-    //     type: "GET",
-    //     success: function (data) {
-    //         const tableRows = data.map((rowData) => {
-    //             const row = document.createElement('tr');
-    //             const rowValues = Object.values(rowData).filter(value => value !== null);
-    //             rowValues.forEach((value, index) => {
-    //                 const cell = document.createElement('td');
-    //                 if (index === 1) { // title cell
-    //                     cell.textContent = value;
-    //                     cell.style.cursor = "pointer";
-    //                     cell.addEventListener('click', () => {
-    //                         const id = rowData['id'];
-    //                         // go to the page with the corresponding id
-    //                         window.location.href = `/posts/${id}`;
-    //                     });
-    //                 } else {
-    //                     cell.textContent = value;
-    //                 }
-    //                 row.appendChild(cell);
-    //             });
-    //             return row;
-    //         });
-    //
-    //         const tableBody = document.getElementById('table-body');
-    //         tableRows.forEach((row) => tableBody.appendChild(row));
-    //     }
-    // });
     $(document).ready(function () {
         const tableBody = document.getElementById('table-body');
         $.ajax({
@@ -122,49 +90,47 @@
             const keyword = $keyword.val();
             const target = $searchTarget.val();
 
-            if (target === 'title') {// 제목으로 검색
+            if (target === 'title') { // 제목으로 검색
                 searchByTitle(keyword);
-            } else if (target === 'username') {// 작성자로 검색
+            } else if (target === 'username') { // 작성자로 검색
                 searchByUsername(keyword);
             }
         });
 
         function searchByTitle(keyword) {
             $.ajax({
-                url: `/board/search?keyword=${keyword}&target=title`,
+                url: `/api/board/search?keyword=${keyword}&target=title`,
                 type: "GET",
                 success: function (data) {
-                    const tableBody = document.getElementById('table-body');
-                    tableBody.innerHTML = '';
+                    const tableBody = $('#table-body');
+                    tableBody.empty();
                     if (data.length === 0) {
-                        const row = document.createElement('tr');
-                        const cell = document.createElement('td');
-                        cell.colSpan = 6;
-                        cell.textContent = '검색 결과가 없습니다.';
-                        row.appendChild(cell);
-                        tableBody.appendChild(row);
+                        const row = $('<tr>');
+                        const cell = $('<td>').attr('colspan', 6).text('검색 결과가 없습니다.');
+                        row.append(cell);
+                        tableBody.append(row);
+
                     } else {
-                        const tableRows = data.map((rowData) => {
-                            const row = document.createElement('tr');
+                        Array.from(data).forEach(rowData => {
+                            const row = $('<tr>');
                             const rowValues = Object.values(rowData).filter(value => value !== null);
                             rowValues.forEach((value, index) => {
-                                const cell = document.createElement('td');
+                                const cell = $('<td>');
                                 if (index === 1) { // title cell
-                                    cell.textContent = value;
-                                    cell.style.cursor = "pointer";
-                                    cell.addEventListener('click', () => {
+                                    cell.text(value);
+                                    cell.css('cursor', 'pointer');
+                                    cell.click(() => {
                                         const id = rowData['id'];
                                         // go to the page with the corresponding id
                                         window.location.href = `/posts/${id}`;
                                     });
                                 } else {
-                                    cell.textContent = value;
+                                    cell.text(value);
                                 }
-                                row.appendChild(cell);
+                                row.append(cell);
                             });
-                            return row;
+                            tableBody.append(row);
                         });
-                        tableRows.forEach((row) => tableBody.appendChild(row));
                     }
                 }
             });
@@ -172,45 +138,144 @@
 
         function searchByUsername(keyword) {
             $.ajax({
-                url: `/board/search?keyword=${keyword}&target=username`,
+                url: `/api/board/search?keyword=${keyword}&target=username`,
                 type: "GET",
                 success: function (data) {
-                    const tableBody = document.getElementById('table-body');
-                    tableBody.innerHTML = '';
+                    const tableBody = $('#table-body');
+                    tableBody.empty();
                     if (data.length === 0) {
-                        const row = document.createElement('tr');
-                        const cell = document.createElement('td');
-                        cell.colSpan = 6;
-                        cell.textContent = '검색 결과가 없습니다.';
-                        row.appendChild(cell);
-                        tableBody.appendChild(row);
+                        const row = $('<tr>');
+                        const cell = $('<td>').attr('colspan', 6).text('검색 결과가 없습니다.');
+                        row.append(cell);
+                        tableBody.append(row);
                     } else {
-                        const tableRows = data.map((rowData) => {
-                            const row = document.createElement('tr');
+                        data.forEach(rowData => {
+                            const row = $('<tr>');
                             const rowValues = Object.values(rowData).filter(value => value !== null);
                             rowValues.forEach((value, index) => {
-                                const cell = document.createElement('td');
+                                const cell = $('<td>');
                                 if (index === 1) { // title cell
-                                    cell.textContent = value;
-                                    cell.style.cursor = "pointer";
-                                    cell.addEventListener('click', () => {
+                                    cell.text(value);
+                                    cell.css('cursor', 'pointer');
+                                    cell.click(() => {
                                         const id = rowData['id'];
                                         // go to the page with the corresponding id
                                         window.location.href = `/posts/${id}`;
                                     });
                                 } else {
-                                    cell.textContent = value;
+                                    cell.text(value);
                                 }
-                                row.appendChild(cell);
+                                row.append(cell);
                             });
-                            return row;
+                            tableBody.append(row);
                         });
-                        tableRows.forEach((row) => tableBody.appendChild(row));
                     }
                 }
             });
         }
     });
+
+
+
+
+    // $(document).ready(function () {
+    //     const $searchButton = $('#search-button');
+    //     const $searchTarget = $('#search-target');
+    //     const $keyword = $('#keyword');
+    //
+    //     $searchButton.click(function () {
+    //         const keyword = $keyword.val();
+    //         const target = $searchTarget.val();
+    //
+    //         if (target === 'title') {// 제목으로 검색
+    //             searchByTitle(keyword);
+    //         } else if (target === 'username') {// 작성자로 검색
+    //             searchByUsername(keyword);
+    //         }
+    //     });
+    //
+    //     function searchByTitle(keyword) {
+    //         $.ajax({
+    //             url: `/board/search?keyword=${keyword}&target=title`,
+    //             type: "GET",
+    //             success: function (data) {
+    //                 const tableBody = document.getElementById('table-body');
+    //                 tableBody.innerHTML = '';
+    //                 if (data.length === 0) {
+    //                     const row = document.createElement('tr');
+    //                     const cell = document.createElement('td');
+    //                     cell.colSpan = 6;
+    //                     cell.textContent = '검색 결과가 없습니다.';
+    //                     row.appendChild(cell);
+    //                     tableBody.appendChild(row);
+    //                 } else {
+    //                     const tableRows = data.map((rowData) => {
+    //                         const row = document.createElement('tr');
+    //                         const rowValues = Object.values(rowData).filter(value => value !== null);
+    //                         rowValues.forEach((value, index) => {
+    //                             const cell = document.createElement('td');
+    //                             if (index === 1) { // title cell
+    //                                 cell.textContent = value;
+    //                                 cell.style.cursor = "pointer";
+    //                                 cell.addEventListener('click', () => {
+    //                                     const id = rowData['id'];
+    //                                     // go to the page with the corresponding id
+    //                                     window.location.href = `/posts/${id}`;
+    //                                 });
+    //                             } else {
+    //                                 cell.textContent = value;
+    //                             }
+    //                             row.appendChild(cell);
+    //                         });
+    //                         return row;
+    //                     });
+    //                     tableRows.forEach((row) => tableBody.appendChild(row));
+    //                 }
+    //             }
+    //         });
+    //     }
+    //
+    //     function searchByUsername(keyword) {
+    //         $.ajax({
+    //             url: `/board/search?keyword=${keyword}&target=username`,
+    //             type: "GET",
+    //             success: function (data) {
+    //                 const tableBody = document.getElementById('table-body');
+    //                 tableBody.innerHTML = '';
+    //                 if (data.length === 0) {
+    //                     const row = document.createElement('tr');
+    //                     const cell = document.createElement('td');
+    //                     cell.colSpan = 6;
+    //                     cell.textContent = '검색 결과가 없습니다.';
+    //                     row.appendChild(cell);
+    //                     tableBody.appendChild(row);
+    //                 } else {
+    //                     const tableRows = data.map((rowData) => {
+    //                         const row = document.createElement('tr');
+    //                         const rowValues = Object.values(rowData).filter(value => value !== null);
+    //                         rowValues.forEach((value, index) => {
+    //                             const cell = document.createElement('td');
+    //                             if (index === 1) { // title cell
+    //                                 cell.textContent = value;
+    //                                 cell.style.cursor = "pointer";
+    //                                 cell.addEventListener('click', () => {
+    //                                     const id = rowData['id'];
+    //                                     // go to the page with the corresponding id
+    //                                     window.location.href = `/posts/${id}`;
+    //                                 });
+    //                             } else {
+    //                                 cell.textContent = value;
+    //                             }
+    //                             row.appendChild(cell);
+    //                         });
+    //                         return row;
+    //                     });
+    //                     tableRows.forEach((row) => tableBody.appendChild(row));
+    //                 }
+    //             }
+    //         });
+    //     }
+    // });
 </script>
 </body>
 </html>

@@ -59,4 +59,11 @@ public class dataController {
         postService.deletePost(postId);
         return "redirect:/board";
     }
+
+    //검색하기
+    @GetMapping(value = "/board/search")
+    public List<BoardDto> searchPost(@RequestParam(value = "keyword")String keyword, @RequestParam(value = "target") String target) throws Exception{
+        return postService.searchBoard(keyword,target);
+    }
 }
+

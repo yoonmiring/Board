@@ -49,8 +49,9 @@ public class modelAndViewController {
     }
 
     //검색 화면
-    @RequestMapping(value = "/board/search?keyword={keyword}", method = RequestMethod.GET)
-    public ModelAndView searchKeyword(@PathVariable(value = "keyword") String keyword, @RequestParam(value = "target") String target) throws Exception {        ModelAndView mv = new ModelAndView("/board/home");
+    @RequestMapping(value = "/board/search", method = RequestMethod.GET)
+    public ModelAndView searchKeyword(@RequestParam(value = "keyword")  String keyword, @RequestParam(value = "target") String target) throws Exception {
+        ModelAndView mv = new ModelAndView("/board/home");
         List<BoardDto> postSearchList = postService.searchBoard(keyword,target);
         mv.addObject("postList", postSearchList);
         return mv;

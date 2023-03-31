@@ -27,12 +27,12 @@
     </div>
     <!-- 수정/삭제 -->
     <div>
-            <span>
+            <span class="edit-button">
             <form th:action="@{'edit/' + ${PostDto.id}}" method="get">
                 <button type="submit">수정</button>
             </form>
             </span>
-        <span>
+            <span class="delete-button">
             <form th:action="@{'/posts' + ${PostDto.id}}" method="post">
                 <input type="hidden" name="_method" value="delete"/>
                 <input type="hidden" name="postId" th:value="${PostDto.id}"/>
@@ -43,9 +43,12 @@
     </div>
     <!--comment부분-->
     <div>
-
-
-
+        <p> ------------------------------------------------------------------</p>
+        <b>댓글달기</b>
+        이름:<input type="text" name="username">
+        비밀번호:<input type="text" name="password"><br>
+        <textarea name="content" class="comment-text" placeholder="댓글을 입력해 주세요."></textarea>
+        <button type="button" class="btn-comment-save" id="btn-save">등록</button>
     </div>
 <!--footer부분-->
 <div th:insert="common/footer.html" id="footer"></div>

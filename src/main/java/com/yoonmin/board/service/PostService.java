@@ -97,20 +97,6 @@ public class PostService {
     }
 
 //    게시글 검색
-//    @Transactional
-//    public List<BoardDto> searchBoard(String keyword) {
-//
-//        List<PostEntity> postEntities = postRepository.findByTitleContaining(keyword);
-//        List<BoardDto> postDtoList = new ArrayList<>();
-//
-//        if (postEntities.isEmpty()) return postDtoList;
-//
-//        for (PostEntity postEntity : postEntities) {
-//            postDtoList.add(this.convertEntityToDto(postEntity));
-//        }
-//        return postDtoList;
-//    }
-
     @Transactional
     public List<BoardDto> searchBoard(String keyword, String target) {
         List<PostEntity> postEntities;
@@ -131,8 +117,6 @@ public class PostService {
 
         return postDtoList;
     }
-
-
     private BoardDto convertEntityToDto(PostEntity postEntity) {
         return BoardDto.builder()
                 .id(postEntity.getId())
