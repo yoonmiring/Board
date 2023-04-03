@@ -1,5 +1,6 @@
 package com.yoonmin.board.domain.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.yoonmin.board.domain.entity.PostEntity;
 import lombok.*;
 import org.springframework.stereotype.Component;
@@ -20,9 +21,9 @@ public class PostDto {
     private String content;
 
     private String username;
-
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
-
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime updatedAt;
 
     private Long hits;
@@ -30,19 +31,6 @@ public class PostDto {
     private String password;
 
 
-//    public PostEntity toEntity(){
-//        PostEntity postEntity = PostEntity.builder()
-//                .id(id)
-//                .title(title)
-//                .content(content)
-//                .username(username)
-//                .createdAt(createdAt)
-//                .updatedAt(updatedAt)
-//                .hits(hits)
-//                .password(password)
-//                .build();
-//        return postEntity;
-//    }
     public PostEntity toEntity(){
         PostEntity.PostEntityBuilder builder = PostEntity.builder();
         builder.id(id);

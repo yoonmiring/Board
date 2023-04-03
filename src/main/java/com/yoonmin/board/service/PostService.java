@@ -5,13 +5,12 @@ import com.yoonmin.board.domain.dto.PostDto;
 import com.yoonmin.board.domain.entity.PostEntity;
 import com.yoonmin.board.domain.repository.PostRepository;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
 import java.util.Optional;
-import javax.persistence.EntityManager;
+
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -67,12 +66,15 @@ public class PostService {
         return postDto;
     }
 //    //조회수 증가
-//    @Transactional
-//    public void updateHits(Long id, BoardDto boardDto){
-//        Optional<PostEntity> byId = postRepository.findById(id);
-//        PostEntity updateHits = byId.orElseThrow(() -> new EntityNotFoundException("해당 게시글이 존재하지 않습니다."));
-//        updateHits.updateHits(updateHits.getHits());
-//    }
+    @Transactional
+    public void increaseViewCount(Long postId) {
+        Optional<PostEntity> postEntityOpt = postRepository.findById(postId);
+        if (postEntityOpt.isPresent()) {
+            postRepository.updateHits(postId);
+        } else {
+            throw new EntityNotFoundException("Post not found");
+        }
+    }
     //게시물 작성
     @Transactional
     public Long savePost(PostDto postDto) {
@@ -127,6 +129,8 @@ public class PostService {
                 .hits(postEntity.getHits())
                 .build();
     }
+
+
 ////페이징
 //    @Transactional
 //    public List<PostDto> getBoardlist(Integer pageNum) {

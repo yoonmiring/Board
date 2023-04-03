@@ -17,7 +17,7 @@
             <h2 class="post-title"></h2>
             작성일자: <a class="post-created-at"></a>
             (<a class="post-updated-at"></a>)<br>
-            조회수: <a class="post-hits"></a>
+            조회수: <a class="post-hits"><span id="view-count"></span></a>
             작성자: <a class="post-username"></a>
             <p> ------------------------------------------------------------------</p>
             <p class="post-content"></p>
@@ -104,6 +104,23 @@
                 error: function (xhr, status, error) {
                     console.log(error);
                 }
+            });
+        }
+    });
+    $(document).ready(function () {
+        const postId = $('#post-id').val();
+        increaseViewCount(postId);
+
+        function increaseViewCount(postId) {
+            $.ajax({
+                url: `/posts/${postId}/views`,
+                type: 'PUT',
+                success: function (data) {
+                    $('#view-count').text(data.count);
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                },
             });
         }
     });

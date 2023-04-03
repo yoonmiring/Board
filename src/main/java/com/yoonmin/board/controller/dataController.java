@@ -26,6 +26,7 @@ public class dataController {
     @GetMapping(value = "/board", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<BoardDto>> list() throws Exception {
         List<BoardDto> postList = postService.getPostlist();
+
         return new ResponseEntity<List<BoardDto>>(postList, HttpStatus.OK);
     }
 
@@ -35,6 +36,8 @@ public class dataController {
         if (postDto.getContent() == null) {
             postDto.setContent("");
         }
+        postDto.setCreatedAt(LocalDateTime.now());
+        postDto.setUpdatedAt(LocalDateTime.now());
         Long postId = postService.savePost(postDto);
         return new ResponseEntity<>(postId, HttpStatus.CREATED);
     }
@@ -43,13 +46,16 @@ public class dataController {
     @GetMapping(value = "/posts/{postId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PostDto> getPost(@PathVariable Long postId) throws Exception {
         PostDto postDTO = postService.getPost(postId);
+        // increase view count
+        postService.increaseViewCount(postId);
         return new ResponseEntity<PostDto>(postDTO, HttpStatus.OK);
     }
 
     //글 수정하기
     @PutMapping(value = "/posts/edit/{postId}")
-    public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDTO, @PathVariable() Long postId) throws Exception {
-        PostDto updatePost =  postService.updatePost(postId, postDTO);
+    public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDto, @PathVariable() Long postId) throws Exception {
+        postDto.setUpdatedAt(LocalDateTime.now());
+        PostDto updatePost =  postService.updatePost(postId, postDto);
         return new ResponseEntity<PostDto>(updatePost, HttpStatus.OK);
     }
 
@@ -65,5 +71,6 @@ public class dataController {
     public List<BoardDto> searchPost(@RequestParam(value = "keyword")String keyword, @RequestParam(value = "target") String target) throws Exception{
         return postService.searchBoard(keyword,target);
     }
+
 }
 
