@@ -1,5 +1,6 @@
 package com.yoonmin.board.controller;
 
+
 import com.yoonmin.board.domain.dto.BoardDto;
 import com.yoonmin.board.domain.entity.PostEntity;
 import com.yoonmin.board.domain.repository.PostRepository;
@@ -13,6 +14,7 @@ import com.yoonmin.board.domain.dto.PostDto;
 import org.springframework.http.HttpStatus;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RestController
@@ -22,6 +24,7 @@ public class dataController {
     private PostService postService;
     @Autowired
     private PostRepository postRepository;
+
     //main Board data
     @GetMapping(value = "/board", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<BoardDto>> list() throws Exception {

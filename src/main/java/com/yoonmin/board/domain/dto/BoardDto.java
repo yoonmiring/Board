@@ -3,6 +3,7 @@ package com.yoonmin.board.domain.dto;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.yoonmin.board.domain.entity.PostEntity;
 import lombok.*;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -24,6 +25,7 @@ public class BoardDto {
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 
     private Long hits;

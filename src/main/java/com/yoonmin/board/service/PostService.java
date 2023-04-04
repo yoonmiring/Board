@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -93,6 +94,7 @@ public class PostService {
         Optional<PostEntity> byId = postRepository.findById(id);
         PostEntity updatePost = byId.orElseThrow(() -> new EntityNotFoundException("해당 게시글이 존재하지 않습니다."));
         updatePost.update(postDto.getTitle(), postDto.getContent());
+        updatePost.setUpdatedAt(LocalDateTime.now());
         return PostDto.builder()
                 .id(updatePost.getId())
                 .build();
