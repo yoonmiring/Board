@@ -96,7 +96,7 @@
         const $searchButton = $('#search-button');
         const $searchTarget = $('#search-target');
         const $keyword = $('#keyword');
-        const pageNumber = $("[name=page]").val();
+        const page = $("[name=page]").val();
         $searchButton.click(function () {
             const keyword = $keyword.val();
             const target = $searchTarget.val();
@@ -109,7 +109,7 @@
         });
         function searchByTitle(keyword, pageNumber) {
             $.ajax({
-                url: `/api/board/search?keyword=${keyword}&target=title&page=${pageNumber}&size=15`,
+                url: `/api/board/search?keyword=${keyword}&target=title&page=${page}`,
                 type: "GET",
                 success: function (data) {
                     const tableBody = $('#table-body');
@@ -141,7 +141,6 @@
                             });
                             tableBody.append(row);
                         });
-                        // 페이지네이션 추가
                         const pagination = $('<ul class="pagination"></ul>');
                         const totalPages = data.totalPages;
                         const currentPage = data.number + 1;

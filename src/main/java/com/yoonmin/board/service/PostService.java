@@ -7,9 +7,7 @@ import com.yoonmin.board.domain.repository.PostRepository;
 import lombok.AllArgsConstructor;
 
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -30,10 +28,10 @@ public class PostService {
     private static final int BLOCK_PAGE_NUM_COUNT = 10; //페이지 사이즈
     private static final int PAGE_POST_COUNT = 15;//한 페이지당 나올 게시물 수
 
-
+//전체 게시물 조회
     @Transactional
     public Page<BoardDto> getPostlist(Pageable pageable) {
-        Page<PostEntity> postEntities = postRepository.findAll(pageable);
+        Page<PostEntity> postEntities = postRepository.findAll(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id").descending()));
         List<BoardDto> boardDtoList = new ArrayList<>();
 
         for (PostEntity postEntity : postEntities) {
