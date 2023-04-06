@@ -5,6 +5,8 @@
     <title>Board</title>
     <link rel="stylesheet" th:href="@{/css/board.css}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
 <!--haeder부분-->
@@ -44,17 +46,26 @@
     </div>
 </div>
 
+<!--페이지처리-->
+<div>
+    <nav style="text-align: center;">
+        <ul class="pagination"></ul>
+        <input type="hidden" name="page" th:value="${postList.number}"/>
+    </nav>
+</div>
+
 <!--footer부분-->
 <div th:insert="common/footer.html" id="footer"></div>
 
 <script>
     $(document).ready(function () {
         const tableBody = document.getElementById('table-body');
+        var page = $("[name=page]").val();
         $.ajax({
-            url: "/api/board",
+            url: `/api/board?page=${page}`,
             type: "GET",
             success: function (data) {
-                const tableRows = data.map((rowData) => {
+                const tableRows = data.content.map((rowData) => {
                     const row = document.createElement('tr');
                     const rowValues = Object.values(rowData).filter(value => value !== null);
                     rowValues.forEach((value, index) => {
@@ -77,6 +88,7 @@
                     return row;
                 });
                 tableRows.forEach((row) => tableBody.appendChild(row));
+                renderPagination(data);
             }
         });
     });
@@ -84,7 +96,7 @@
         const $searchButton = $('#search-button');
         const $searchTarget = $('#search-target');
         const $keyword = $('#keyword');
-
+        const pageNumber = $("[name=page]").val();
         $searchButton.click(function () {
             const keyword = $keyword.val();
             const target = $searchTarget.val();
@@ -95,10 +107,9 @@
                 searchByUsername(keyword);
             }
         });
-
-        function searchByTitle(keyword) {
+        function searchByTitle(keyword, pageNumber) {
             $.ajax({
-                url: `/api/board/search?keyword=${keyword}&target=title`,
+                url: `/api/board/search?keyword=${keyword}&target=title&page=${pageNumber}&size=15`,
                 type: "GET",
                 success: function (data) {
                     const tableBody = $('#table-body');
@@ -130,14 +141,32 @@
                             });
                             tableBody.append(row);
                         });
+                        // 페이지네이션 추가
+                        const pagination = $('<ul class="pagination"></ul>');
+                        const totalPages = data.totalPages;
+                        const currentPage = data.number + 1;
+
+                        for (let i = 1; i <= totalPages; i++) {
+                            const li = $('<li class="page-item"></li>');
+                            const a = $('<a class="page-link"></a>');
+                            a.text(i);
+                            if (i === currentPage) {
+                                li.addClass('active');
+                            }
+                            a.click(() => {
+                                searchByTitle(keyword, i);
+                            });
+                            li.append(a);
+                            pagination.append(li);
+                        }
+                        $('#pagination-wrapper').empty().append(pagination);
                     }
                 }
             });
         }
-
-        function searchByUsername(keyword) {
+        function searchByUsername(keyword,pageNumber) {
             $.ajax({
-                url: `/api/board/search?keyword=${keyword}&target=username`,
+                url: `/api/board/search?keyword=${keyword}&target=username&page=${pageNumber}&size=15`,
                 type: "GET",
                 success: function (data) {
                     const tableBody = $('#table-body');
@@ -168,113 +197,181 @@
                             });
                             tableBody.append(row);
                         });
+                        // 페이지네이션 추가
+                        const pagination = $('<ul class="pagination"></ul>');
+                        const totalPages = data.totalPages;
+                        const currentPage = data.number + 1;
+
+                        for (let i = 1; i <= totalPages; i++) {
+                            const li = $('<li class="page-item"></li>');
+                            const a = $('<a class="page-link"></a>');
+                            a.text(i);
+                            if (i === currentPage) {
+                                li.addClass('active');
+                            }
+                            a.click(() => {
+                                searchByTitle(keyword, i);
+                            });
+                            li.append(a);
+                            pagination.append(li);
+                        }
+                        $('#pagination-wrapper').empty().append(pagination);
                     }
                 }
             });
         }
     });
+    // 페이지 구현
+    function renderPagination(data) {
+        const nav = $('<nav>').css('text-align', 'center');
+        const ul = $('<ul>').addClass('pagination').appendTo(nav);
+        // 현재페이지
+        const currentPage = $("[name=page]").val();
+        // 총 페이지
+        const totalPages = Math.ceil(data.totalElements / data.size);
+
+        $.ajax({
+            type: "GET",
+            url: `/api/board?page=${currentPage}`,
+            dataType: "json",
+            success: function (data) {
+                // 페이지 블럭의 첫페이지 번호와 마지막페이지 번호(ex.17페이지 일경우 start=11 last=20)
+                var start = Math.floor(currentPage / 10) * 10 + 1;
+                var last = (start + 9 < totalPages ? start + 9 : totalPages);
 
 
+                // <<버튼 클릭시
+                if (start > 10) {
+                    $('<li>').appendTo(ul).append(
+                        $('<a>').attr('href', '/board?page=1').attr('aria-label', 'First').append(
+                            $('<span>').attr('aria-hidden', 'true').text('<<')
+                        )
+                    ).on('click', function (e) {
+                        e.preventDefault();
+                        window.location.href = '/board?page=1';
+                    });
+                }
 
 
-    // $(document).ready(function () {
-    //     const $searchButton = $('#search-button');
-    //     const $searchTarget = $('#search-target');
-    //     const $keyword = $('#keyword');
-    //
-    //     $searchButton.click(function () {
-    //         const keyword = $keyword.val();
-    //         const target = $searchTarget.val();
-    //
-    //         if (target === 'title') {// 제목으로 검색
-    //             searchByTitle(keyword);
-    //         } else if (target === 'username') {// 작성자로 검색
-    //             searchByUsername(keyword);
-    //         }
-    //     });
-    //
-    //     function searchByTitle(keyword) {
-    //         $.ajax({
-    //             url: `/board/search?keyword=${keyword}&target=title`,
-    //             type: "GET",
-    //             success: function (data) {
-    //                 const tableBody = document.getElementById('table-body');
-    //                 tableBody.innerHTML = '';
-    //                 if (data.length === 0) {
-    //                     const row = document.createElement('tr');
-    //                     const cell = document.createElement('td');
-    //                     cell.colSpan = 6;
-    //                     cell.textContent = '검색 결과가 없습니다.';
-    //                     row.appendChild(cell);
-    //                     tableBody.appendChild(row);
-    //                 } else {
-    //                     const tableRows = data.map((rowData) => {
-    //                         const row = document.createElement('tr');
-    //                         const rowValues = Object.values(rowData).filter(value => value !== null);
-    //                         rowValues.forEach((value, index) => {
-    //                             const cell = document.createElement('td');
-    //                             if (index === 1) { // title cell
-    //                                 cell.textContent = value;
-    //                                 cell.style.cursor = "pointer";
-    //                                 cell.addEventListener('click', () => {
-    //                                     const id = rowData['id'];
-    //                                     // go to the page with the corresponding id
-    //                                     window.location.href = `/posts/${id}`;
-    //                                 });
-    //                             } else {
-    //                                 cell.textContent = value;
-    //                             }
-    //                             row.appendChild(cell);
-    //                         });
-    //                         return row;
-    //                     });
-    //                     tableRows.forEach((row) => tableBody.appendChild(row));
-    //                 }
-    //             }
-    //         });
-    //     }
-    //
-    //     function searchByUsername(keyword) {
-    //         $.ajax({
-    //             url: `/board/search?keyword=${keyword}&target=username`,
-    //             type: "GET",
-    //             success: function (data) {
-    //                 const tableBody = document.getElementById('table-body');
-    //                 tableBody.innerHTML = '';
-    //                 if (data.length === 0) {
-    //                     const row = document.createElement('tr');
-    //                     const cell = document.createElement('td');
-    //                     cell.colSpan = 6;
-    //                     cell.textContent = '검색 결과가 없습니다.';
-    //                     row.appendChild(cell);
-    //                     tableBody.appendChild(row);
-    //                 } else {
-    //                     const tableRows = data.map((rowData) => {
-    //                         const row = document.createElement('tr');
-    //                         const rowValues = Object.values(rowData).filter(value => value !== null);
-    //                         rowValues.forEach((value, index) => {
-    //                             const cell = document.createElement('td');
-    //                             if (index === 1) { // title cell
-    //                                 cell.textContent = value;
-    //                                 cell.style.cursor = "pointer";
-    //                                 cell.addEventListener('click', () => {
-    //                                     const id = rowData['id'];
-    //                                     // go to the page with the corresponding id
-    //                                     window.location.href = `/posts/${id}`;
-    //                                 });
-    //                             } else {
-    //                                 cell.textContent = value;
-    //                             }
-    //                             row.appendChild(cell);
-    //                         });
-    //                         return row;
-    //                     });
-    //                     tableRows.forEach((row) => tableBody.appendChild(row));
-    //                 }
-    //             }
-    //         });
-    //     }
-    // });
+                // < 버튼 생성
+                if (start > 10) {
+                    $('<li>').appendTo(ul).append(
+                        $('<a>').attr('href', '#').attr('aria-label', 'Previous').append(
+                            $('<span>').attr('aria-hidden', 'true').text('<')
+                        )
+                    ).on('click', function (e) {
+                        e.preventDefault(); // 기본 이벤트 동작 방지
+                        var prevPage = currentPage - 9;
+                        if (prevPage >= 1) {
+                            window.location.href = '/board?page=' + prevPage;
+                        } else {
+                            prevPage = 1;
+                        }
+                    });
+                }
+
+                //원하는 페이지 이동
+                for (var page = start; page <= last; page++) {
+                    $('<li>').toggleClass('active', page == data.number + 1).appendTo(ul)
+                        .append(
+                            $('<a>').attr('href', '/board?page=' + page).text(page)
+                                .on('click', function (e) {
+                                    e.preventDefault();
+                                    var pageNum = $(this).attr('href').split('=')[1];
+                                    window.location.href = '/board?page=' + pageNum;
+                                })
+                        );
+                }
+
+                // > 버튼 생성
+                if (totalPages > 11 && currentPage <= (Math.floor(totalPages / 10) * 10) - 9) {
+                    $('<li>').appendTo(ul).append(
+                        $('<a>').attr('href', '#').attr('aria-label', 'Next').append(
+                            $('<span>').attr('aria-hidden', 'true').text('>')
+                        )
+                    ).on('click', function (e) {
+                        e.preventDefault();
+                        var nextPage = parseInt(currentPage) + 11;
+                        if (nextPage > totalPages) {
+                            window.location.href = '/board?page=' + totalPages;
+                        } else {
+                            window.location.href = '/board?page=' + nextPage;
+                        }
+                    });
+                } else if (totalPages > 11 && currentPage % 10 !== 0 && currentPage < (Math.floor(totalPages / 10) * 10)) {
+                    $('<li>').appendTo(ul).append(
+                        $('<a>').attr('href', '#').attr('aria-label', 'Next').append(
+                            $('<span>').attr('aria-hidden', 'true').text('>')
+                        )
+                    ).on('click', function (e) {
+                        e.preventDefault();
+                        var nextPage = parseInt(currentPage) + 11;
+                        if (nextPage > totalPages) {
+                            window.location.href = '/board?page=' + totalPages;
+                        } else {
+                            window.location.href = '/board?page=' + nextPage;
+                        }
+                    });
+                } else if (totalPages > 11 && currentPage % 10 === 0 && currentPage <= totalPages) {
+                    var lastBlockStart = Math.floor(totalPages / 10) * 10 - 9;
+                    if (currentPage < lastBlockStart) {
+                        $('<li>').appendTo(ul).append(
+                            $('<a>').attr('href', '#').attr('aria-label', 'Next').append(
+                                $('<span>').attr('aria-hidden', 'true').text('>')
+                            )
+                        ).on('click', function (e) {
+                            e.preventDefault();
+                            var nextPage = parseInt(currentPage) + 11;
+                            if (nextPage > totalPages) {
+                                window.location.href = '/board?page=' + totalPages;
+                            } else {
+                                window.location.href = '/board?page=' + nextPage;
+                            }
+                        });
+                    }
+                }
+                // >> 버튼 생성
+                if (totalPages > 11 && currentPage <= (Math.floor(totalPages / 10) * 10) - 9) {
+                    $('<li>').appendTo(ul).append(
+                        $('<a>').attr('href', '#').attr('aria-label', 'Next').append(
+                            $('<span>').attr('aria-hidden', 'true').text('>>')
+                        )
+                    ).on('click', function (e) {
+                        e.preventDefault();
+                        window.location.href = '/board?page=' + totalPages;
+
+                    });
+                } else if (totalPages > 11 && currentPage % 10 !== 0 && currentPage < (Math.floor(totalPages / 10) * 10)) {
+                    $('<li>').appendTo(ul).append(
+                        $('<a>').attr('href', '#').attr('aria-label', 'Next').append(
+                            $('<span>').attr('aria-hidden', 'true').text('>>')
+                        )
+                    ).on('click', function (e) {
+                        e.preventDefault();
+                            window.location.href = '/board?page=' + totalPages;
+
+                    });
+                } else if (totalPages > 11 && currentPage % 10 === 0 && currentPage <= totalPages) {
+                    var lastBlockStart = Math.floor(totalPages / 10) * 10 - 9;
+                    if (currentPage < lastBlockStart) {
+                        $('<li>').appendTo(ul).append(
+                            $('<a>').attr('href', '#').attr('aria-label', 'Next').append(
+                                $('<span>').attr('aria-hidden', 'true').text('>>')
+                            )
+                        ).on('click', function (e) {
+                            e.preventDefault();
+                                window.location.href = '/board?page=' + totalPages;
+                        });
+                    }
+                }
+                $('body').append(nav);
+                $('#footer').before(nav);
+            },
+            error: function (xhr, status, error) {
+                console.log("Error occurred: " + error);
+            }
+        });
+    };
 </script>
 </body>
 </html>

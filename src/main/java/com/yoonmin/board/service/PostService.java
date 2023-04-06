@@ -6,6 +6,10 @@ import com.yoonmin.board.domain.entity.PostEntity;
 import com.yoonmin.board.domain.repository.PostRepository;
 import lombok.AllArgsConstructor;
 
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -17,6 +21,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @AllArgsConstructor
 @Service
 public class PostService {
@@ -26,14 +31,13 @@ public class PostService {
     private static final int PAGE_POST_COUNT = 15;//한 페이지당 나올 게시물 수
 
 
-    //전체 게시물 목록 조회
     @Transactional
-    public List<BoardDto> getPostlist() {
-        List<PostEntity> postEntities = postRepository.findAll();
-        List<BoardDto> postDtoList = new ArrayList<>();
+    public Page<BoardDto> getPostlist(Pageable pageable) {
+        Page<PostEntity> postEntities = postRepository.findAll(pageable);
+        List<BoardDto> boardDtoList = new ArrayList<>();
 
         for (PostEntity postEntity : postEntities) {
-            BoardDto boardDTO = BoardDto.builder()
+            BoardDto boardDto = BoardDto.builder()
                     .id(postEntity.getId())
                     .title(postEntity.getTitle())
                     .username(postEntity.getUsername())
@@ -42,10 +46,10 @@ public class PostService {
                     .hits(postEntity.getHits())
                     .build();
 
-            postDtoList.add(boardDTO);
+            boardDtoList.add(boardDto);
         }
 
-        return postDtoList;
+        return new PageImpl<>(boardDtoList, pageable, postEntities.getTotalElements());
     }
 
     //    개별 게시물 조회
@@ -102,24 +106,18 @@ public class PostService {
 
 //    게시글 검색
     @Transactional
-    public List<BoardDto> searchBoard(String keyword, String target) {
-        List<PostEntity> postEntities;
+    public Page<BoardDto> searchBoard(String keyword, String target,Pageable pageable) {
+        Page<PostEntity> postEntities;
 
         if (target.equals("title")) {
-            postEntities = postRepository.findByTitleContaining(keyword);
+            postEntities = postRepository.findByTitleContaining(keyword, pageable);
         } else if (target.equals("username")) {
-            postEntities = postRepository.findByUsernameContaining(keyword);
+            postEntities = postRepository.findByUsernameContaining(keyword, pageable);
         } else {
-            postEntities = Collections.emptyList();
+            postEntities = Page.empty();
         }
 
-        List<BoardDto> postDtoList = new ArrayList<>();
-
-        for (PostEntity postEntity : postEntities) {
-            postDtoList.add(this.convertEntityToDto(postEntity));
-        }
-
-        return postDtoList;
+        return postEntities.map(this::convertEntityToDto);
     }
     private BoardDto convertEntityToDto(PostEntity postEntity) {
         return BoardDto.builder()
@@ -131,49 +129,4 @@ public class PostService {
                 .hits(postEntity.getHits())
                 .build();
     }
-
-
-////페이징
-//    @Transactional
-//    public List<PostDto> getBoardlist(Integer pageNum) {
-//        Page<PostEntity> page = postRepository.findAll(PageRequest.of(pageNum - 1, PAGE_POST_COUNT, Sort.by(Sort.Direction.ASC, "createdDate")));
-//
-//        List<PostEntity> postEntities = page.getContent();
-//        List<PostDto> postDtoList = new ArrayList<>();
-//
-//        for (PostEntity postEntity : postEntities) {
-//            postDtoList.add(this.convertEntityToDto(postEntity));
-//        }
-//
-//        return postDtoList;
-//    }
-//
-//    @Transactional
-//    public Long getPostCount() {
-//        return postRepository.count();
-//    }
-//
-//    public Integer[] getPageList(Integer curPageNum) {
-//        Integer[] pageList = new Integer[BLOCK_PAGE_NUM_COUNT];
-//
-//        Double postsTotalCount = Double.valueOf(this.getPostCount());
-//
-//
-//        Integer totalLastPageNum = (int)(Math.ceil((postsTotalCount/PAGE_POST_COUNT)));
-//
-//
-//        Integer blockLastPageNum = (totalLastPageNum > curPageNum + BLOCK_PAGE_NUM_COUNT)
-//                ? curPageNum + BLOCK_PAGE_NUM_COUNT
-//                : totalLastPageNum;
-//
-//
-//        curPageNum = (curPageNum <= 3) ? 1 : curPageNum - 2;
-//
-//
-//        for (int val = curPageNum, idx = 0; val <= blockLastPageNum; val++, idx++) {
-//            pageList[idx] = val;
-//        }
-//
-//        return pageList;
-//    }
 }

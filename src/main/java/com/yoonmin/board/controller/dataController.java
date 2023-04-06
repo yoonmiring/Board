@@ -6,6 +6,10 @@ import com.yoonmin.board.domain.entity.PostEntity;
 import com.yoonmin.board.domain.repository.PostRepository;
 import com.yoonmin.board.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -27,12 +31,12 @@ public class dataController {
 
     //main Board data
     @GetMapping(value = "/board", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<BoardDto>> list() throws Exception {
-        List<BoardDto> postList = postService.getPostlist();
+    public ResponseEntity<Page<BoardDto>> list(@RequestParam(defaultValue = "1") int page, @RequestParam(defaultValue = "15") int size) throws Exception {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<BoardDto> postList = postService.getPostlist(pageable);
 
-        return new ResponseEntity<List<BoardDto>>(postList, HttpStatus.OK);
+        return new ResponseEntity<>(postList, HttpStatus.OK);
     }
-
     //작성글 등록
     @RequestMapping(value = "/posts/create", method = RequestMethod.POST)
     public ResponseEntity<Long> savePost(@RequestBody PostDto postDto) throws Exception {
@@ -71,8 +75,9 @@ public class dataController {
 
     //검색하기
     @GetMapping(value = "/board/search")
-    public List<BoardDto> searchPost(@RequestParam(value = "keyword")String keyword, @RequestParam(value = "target") String target) throws Exception{
-        return postService.searchBoard(keyword,target);
+    @ResponseBody
+    public Page<BoardDto> searchPost(@RequestParam(value = "keyword")String keyword, @RequestParam(value = "target") String target, Pageable pageable) throws Exception{
+        return postService.searchBoard(keyword, target, pageable);
     }
 
 }
