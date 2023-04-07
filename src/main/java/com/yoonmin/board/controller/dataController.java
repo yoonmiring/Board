@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -74,11 +75,16 @@ public class dataController {
     }
 
     //검색하기
-    @GetMapping(value = "/board/search")
-    @ResponseBody
-    public Page<BoardDto> searchPost(@RequestParam(value = "keyword")String keyword, @RequestParam(value = "target") String target, Pageable pageable) throws Exception{
+    @RequestMapping(value = "/board/search", method = RequestMethod.GET)
+    public Page<BoardDto> searchPost(@RequestParam(value = "keyword")  String keyword,
+                                     @RequestParam(value = "target") String target,
+                                     @PageableDefault(size = 15, sort = "id", direction = Sort.Direction.DESC, value = 1) Pageable pageable) throws Exception {
         return postService.searchBoard(keyword, target, pageable);
     }
-
+    //검색하기
+//    @GetMapping(value = "/board/search")
+//    public List<BoardDto> searchPost(@RequestParam(value = "keyword")String keyword, @RequestParam(value = "target") String target) throws Exception{
+//        return postService.searchBoard(keyword,target);
+//    }
 }
 

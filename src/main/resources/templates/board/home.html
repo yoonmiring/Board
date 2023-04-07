@@ -6,7 +6,7 @@
     <link rel="stylesheet" th:href="@{/css/board.css}">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<!--    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>-->
 </head>
 <body>
 <!--haeder부분-->
@@ -23,6 +23,7 @@
             </select>
             <input id="keyword" name="keyword" type="text" placeholder="검색어를 입력해주세요">
             <button id="search-button" type="button">검색</button>
+            <input type="hidden" name="page" th:value="${postList.number}"/>
         </form>
     </div>
     <!--글쓰기 버튼-->
@@ -59,7 +60,7 @@
 
 <script>
     $(document).ready(function () {
-        const tableBody = document.getElementById('table-body');
+        var tableBody = $('#table-body');
         var page = $("[name=page]").val();
         $.ajax({
             url: `/api/board?page=${page}`,
@@ -80,34 +81,37 @@
                                     window.location.href = `/posts/${id}`;
                                 }
                             });
-                        } else {
+                        }   else {
                             cell.textContent = value;
                         }
-                        row.appendChild(cell);
+                        row.append(cell);
                     });
                     return row;
                 });
-                tableRows.forEach((row) => tableBody.appendChild(row));
+                tableRows.forEach((row) => tableBody.append(row));
                 renderPagination(data);
             }
         });
-    });
-    $(document).ready(function () {
+
+
         const $searchButton = $('#search-button');
         const $searchTarget = $('#search-target');
         const $keyword = $('#keyword');
-        const page = $("[name=page]").val();
+
+
         $searchButton.click(function () {
             const keyword = $keyword.val();
             const target = $searchTarget.val();
 
             if (target === 'title') { // 제목으로 검색
-                searchByTitle(keyword);
+                searchByTitle(keyword, page);
             } else if (target === 'username') { // 작성자로 검색
-                searchByUsername(keyword);
+                searchByUsername(keyword, page);
             }
         });
-        function searchByTitle(keyword, pageNumber) {
+
+        function searchByTitle(keyword, page) {
+
             $.ajax({
                 url: `/api/board/search?keyword=${keyword}&target=title&page=${page}`,
                 type: "GET",
@@ -120,52 +124,38 @@
                         row.append(cell);
                         tableBody.append(row);
 
-                    } else {
-                        Array.from(data).forEach(rowData => {
-                            const row = $('<tr>');
+                    } else { // 검색 결과가 있는 경우
+                        const tableRows = data.content.map((rowData) => {
+                            const row = document.createElement('tr');
                             const rowValues = Object.values(rowData).filter(value => value !== null);
                             rowValues.forEach((value, index) => {
-                                const cell = $('<td>');
-                                if (index === 1) { // title cell
-                                    cell.text(value);
-                                    cell.css('cursor', 'pointer');
-                                    cell.click(() => {
-                                        const id = rowData['id'];
-                                        // go to the page with the corresponding id
-                                        window.location.href = `/posts/${id}`;
+                                const cell = document.createElement('td');
+                                if (index === 1) { // 타이틀 셀
+                                    cell.textContent = value;
+                                    cell.style.cursor = "pointer";
+                                    row.addEventListener('click', (event) => {
+                                        if (event.target === cell) {
+                                            const id = rowData['id'];
+                                            // 해당 id가 있는 페이지로 이동합니다
+                                            window.location.href = `/posts/${id}`;
+                                        }
                                     });
-                                } else {
-                                    cell.text(value);
+                                }   else {
+                                    cell.textContent = value;
                                 }
                                 row.append(cell);
                             });
-                            tableBody.append(row);
+                            return row;
                         });
-                        const pagination = $('<ul class="pagination"></ul>');
-                        const totalPages = data.totalPages;
-                        const currentPage = data.number + 1;
-
-                        for (let i = 1; i <= totalPages; i++) {
-                            const li = $('<li class="page-item"></li>');
-                            const a = $('<a class="page-link"></a>');
-                            a.text(i);
-                            if (i === currentPage) {
-                                li.addClass('active');
-                            }
-                            a.click(() => {
-                                searchByTitle(keyword, i);
-                            });
-                            li.append(a);
-                            pagination.append(li);
-                        }
-                        $('#pagination-wrapper').empty().append(pagination);
+                        tableRows.forEach((row) => tableBody.append(row));
+                        renderPagination(data);
                     }
                 }
             });
         }
-        function searchByUsername(keyword,pageNumber) {
+        function searchByUsername(keyword,page) {
             $.ajax({
-                url: `/api/board/search?keyword=${keyword}&target=username&page=${pageNumber}&size=15`,
+                url: `/api/board/search?keyword=${keyword}&target=username&page=${page}`,
                 type: "GET",
                 success: function (data) {
                     const tableBody = $('#table-body');
@@ -196,25 +186,7 @@
                             });
                             tableBody.append(row);
                         });
-                        // 페이지네이션 추가
-                        const pagination = $('<ul class="pagination"></ul>');
-                        const totalPages = data.totalPages;
-                        const currentPage = data.number + 1;
-
-                        for (let i = 1; i <= totalPages; i++) {
-                            const li = $('<li class="page-item"></li>');
-                            const a = $('<a class="page-link"></a>');
-                            a.text(i);
-                            if (i === currentPage) {
-                                li.addClass('active');
-                            }
-                            a.click(() => {
-                                searchByTitle(keyword, i);
-                            });
-                            li.append(a);
-                            pagination.append(li);
-                        }
-                        $('#pagination-wrapper').empty().append(pagination);
+                        // renderPagination(data);
                     }
                 }
             });

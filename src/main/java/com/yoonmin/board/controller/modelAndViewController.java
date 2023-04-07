@@ -25,16 +25,17 @@ public class modelAndViewController {
     @Autowired
     private PostService postService;
 
-    //홈 화면, 전체목록보기(데이터)
+//    홈 화면, 전체목록보기(데이터)
     @RequestMapping(value = "/board", method = RequestMethod.GET)
     @ResponseBody()
-    public ModelAndView list(@RequestParam(defaultValue = "1") int page,@RequestParam(defaultValue = "15") int size) throws Exception {
-        Pageable pageable = PageRequest.of(page - 1, size);
+    public ModelAndView list(@RequestParam(defaultValue = "0") int page,@RequestParam(defaultValue = "15") int size) throws Exception {
+        Pageable pageable = PageRequest.of(page , size);
         Page<BoardDto> postList = postService.getPostlist(pageable);
         ModelAndView mv = new ModelAndView("/board/home");
         mv.addObject("postList", postList);
         return mv;
     }
+
 
     //글 상세 화면
     @RequestMapping(value = "/posts/{post_id}", method = RequestMethod.GET)
@@ -60,15 +61,20 @@ public class modelAndViewController {
     @RequestMapping(value = "/board/search", method = RequestMethod.GET)
     public ModelAndView searchKeyword(@RequestParam(value = "keyword")  String keyword,
                                       @RequestParam(value = "target") String target,
-                                      @PageableDefault(size = 15, sort = "id", direction = Sort.Direction.DESC) Pageable pageable) throws Exception {
+                                      @PageableDefault(size = 15, sort = "id", direction = Sort.Direction.DESC) @RequestParam(value = "page", defaultValue = "0") int page) {
+        Pageable pageable = PageRequest.of(page, 15, Sort.Direction.DESC, "id");
+        Page<BoardDto> postList = postService.searchBoard(keyword, target, pageable);
         ModelAndView mv = new ModelAndView("/board/home");
-        Page<BoardDto> postSearchPage = postService.searchBoard(keyword, target, pageable);
-        mv.addObject("postList", postSearchPage.getContent());
-        mv.addObject("totalPages", postSearchPage.getTotalPages());
-        mv.addObject("currentPage", postSearchPage.getNumber());
-        mv.addObject("keyword", keyword);
-        mv.addObject("target", target);
+//        Page<BoardDto> postSearchPage = postService.searchBoard(keyword, target, pageable);
+        mv.addObject("postList", postList);
         return mv;
     }
-
+//    //검색 화면
+//    @RequestMapping(value = "/board/search", method = RequestMethod.GET)
+//    public ModelAndView searchKeyword(@RequestParam(value = "keyword")  String keyword, @RequestParam(value = "target") String target) throws Exception {
+//        ModelAndView mv = new ModelAndView("/board/home");
+//        List<BoardDto> postSearchList = postService.searchBoard(keyword,target);
+//        mv.addObject("postList", postSearchList);
+//        return mv;
+//    }
 }

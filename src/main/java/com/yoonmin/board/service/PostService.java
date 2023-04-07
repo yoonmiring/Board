@@ -25,10 +25,9 @@ import java.util.List;
 public class PostService {
 
     private final PostRepository postRepository;
-    private static final int BLOCK_PAGE_NUM_COUNT = 10; //페이지 사이즈
-    private static final int PAGE_POST_COUNT = 15;//한 페이지당 나올 게시물 수
 
-//전체 게시물 조회
+
+    //전체 게시물 조회
     @Transactional
     public Page<BoardDto> getPostlist(Pageable pageable) {
         Page<PostEntity> postEntities = postRepository.findAll(PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by("id").descending()));
@@ -50,57 +49,57 @@ public class PostService {
         return new PageImpl<>(boardDtoList, pageable, postEntities.getTotalElements());
     }
 
-    //    개별 게시물 조회
-    @Transactional
-    public PostDto getPost(Long id) {
-        Optional<PostEntity> postEntityWrapper = postRepository.findById(id);
-        PostEntity postEntity = postEntityWrapper.get();
+        //    개별 게시물 조회
+        @Transactional
+        public PostDto getPost (Long id){
+            Optional<PostEntity> postEntityWrapper = postRepository.findById(id);
+            PostEntity postEntity = postEntityWrapper.get();
 
-        PostDto postDto = PostDto.builder()
-                .id(postEntity.getId())
-                .title(postEntity.getTitle())
-                .content(postEntity.getContent())
-                .username(postEntity.getUsername())
-                .createdAt(postEntity.getCreatedAt())
-                .updatedAt(postEntity.getUpdatedAt())
-                .hits(postEntity.getHits()+1)
-                .build();
+            PostDto postDto = PostDto.builder()
+                    .id(postEntity.getId())
+                    .title(postEntity.getTitle())
+                    .content(postEntity.getContent())
+                    .username(postEntity.getUsername())
+                    .createdAt(postEntity.getCreatedAt())
+                    .updatedAt(postEntity.getUpdatedAt())
+                    .hits(postEntity.getHits() + 1)
+                    .build();
 
-        return postDto;
-    }
-//    //조회수 증가
-    @Transactional
-    public void increaseViewCount(Long postId) {
-        Optional<PostEntity> postEntityOpt = postRepository.findById(postId);
-        if (postEntityOpt.isPresent()) {
-            postRepository.updateHits(postId);
-        } else {
-            throw new EntityNotFoundException("Post not found");
+            return postDto;
         }
-    }
-    //게시물 작성
-    @Transactional
-    public Long savePost(PostDto postDto) {
-        return postRepository.save(postDto.toEntity()).getId();
-    }
+//    //조회수 증가
+        @Transactional
+        public void increaseViewCount (Long postId){
+            Optional<PostEntity> postEntityOpt = postRepository.findById(postId);
+            if (postEntityOpt.isPresent()) {
+                postRepository.updateHits(postId);
+            } else {
+                throw new EntityNotFoundException("Post not found");
+            }
+        }
+        //게시물 작성
+        @Transactional
+        public Long savePost (PostDto postDto){
+            return postRepository.save(postDto.toEntity()).getId();
+        }
 
-    //게시글 삭제
-    @Transactional
-    public void deletePost(Long id) {
-        postRepository.deleteById(id);
-    }
+        //게시글 삭제
+        @Transactional
+        public void deletePost (Long id){
+            postRepository.deleteById(id);
+        }
 
-    //게시물 수정
-    @Transactional
-    public PostDto updatePost(Long id, PostDto postDto){
-        Optional<PostEntity> byId = postRepository.findById(id);
-        PostEntity updatePost = byId.orElseThrow(() -> new EntityNotFoundException("해당 게시글이 존재하지 않습니다."));
-        updatePost.update(postDto.getTitle(), postDto.getContent());
-        updatePost.setUpdatedAt(LocalDateTime.now());
-        return PostDto.builder()
-                .id(updatePost.getId())
-                .build();
-    }
+        //게시물 수정
+        @Transactional
+        public PostDto updatePost (Long id, PostDto postDto){
+            Optional<PostEntity> byId = postRepository.findById(id);
+            PostEntity updatePost = byId.orElseThrow(() -> new EntityNotFoundException("해당 게시글이 존재하지 않습니다."));
+            updatePost.update(postDto.getTitle(), postDto.getContent());
+            updatePost.setUpdatedAt(LocalDateTime.now());
+            return PostDto.builder()
+                    .id(updatePost.getId())
+                    .build();
+        }
 
 //    게시글 검색
     @Transactional
@@ -127,4 +126,36 @@ public class PostService {
                 .hits(postEntity.getHits())
                 .build();
     }
-}
+//    게시글 검색
+//        @Transactional
+//        public List<BoardDto> searchBoard (String keyword, String target){
+//            List<PostEntity> postEntities;
+//
+//            if (target.equals("title")) {
+//                postEntities = postRepository.findByTitleContaining(keyword);
+//            } else if (target.equals("username")) {
+//                postEntities = postRepository.findByUsernameContaining(keyword);
+//            } else {
+//                postEntities = Collections.emptyList();
+//            }
+//
+//            List<BoardDto> postDtoList = new ArrayList<>();
+//
+//            for (PostEntity postEntity : postEntities) {
+//                postDtoList.add(this.convertEntityToDto(postEntity));
+//            }
+//
+//            return postDtoList;
+//        }
+//        private BoardDto convertEntityToDto (PostEntity postEntity){
+//            return BoardDto.builder()
+//                    .id(postEntity.getId())
+//                    .title(postEntity.getTitle())
+//                    .username(postEntity.getUsername())
+//                    .createdAt(postEntity.getCreatedAt())
+//                    .updatedAt(postEntity.getUpdatedAt())
+//                    .hits(postEntity.getHits())
+//                    .build();
+//        }
+
+    }
