@@ -166,27 +166,29 @@
                         row.append(cell);
                         tableBody.append(row);
                     } else {
-                        data.forEach(rowData => {
-                            const row = $('<tr>');
+                        const tableRows = data.content.map((rowData) => {
+                            const row = document.createElement('tr');
                             const rowValues = Object.values(rowData).filter(value => value !== null);
                             rowValues.forEach((value, index) => {
-                                const cell = $('<td>');
-                                if (index === 1) { // title cell
-                                    cell.text(value);
-                                    cell.css('cursor', 'pointer');
-                                    cell.click(() => {
-                                        const id = rowData['id'];
-                                        // go to the page with the corresponding id
-                                        window.location.href = `/posts/${id}`;
+                                const cell = document.createElement('td');
+                                if (index === 1) { // 타이틀 셀
+                                    cell.textContent = value;
+                                    cell.style.cursor = "pointer";
+                                    row.addEventListener('click', (event) => {
+                                        if (event.target === cell) {
+                                            const id = rowData['id'];
+                                            // 해당 id가 있는 페이지로 이동합니다
+                                            window.location.href = `/posts/${id}`;
+                                        }
                                     });
-                                } else {
-                                    cell.text(value);
+                                }   else {
+                                    cell.textContent = value;
                                 }
                                 row.append(cell);
                             });
-                            tableBody.append(row);
+                            return row;
                         });
-                        // renderPagination(data);
+                        renderPagination(data);
                     }
                 }
             });
@@ -195,8 +197,14 @@
     // 페이지 구현
     function renderPagination(data) {
         const nav = $('<nav>').css('text-align', 'center');
-        const ul = $('<ul>').addClass('pagination').appendTo(nav);
-        // 현재페이지
+        const ul = $('.pagination');
+        if (ul.length === 0) {
+            $('<ul>').addClass('pagination').appendTo(nav);
+        } else {
+            ul.empty();
+        }
+
+            // 현재페이지
         const currentPage = $("[name=page]").val();
         // 총 페이지
         const totalPages = Math.ceil(data.totalElements / data.size);
