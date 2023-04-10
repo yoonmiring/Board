@@ -39,7 +39,7 @@ public class dataController {
         return new ResponseEntity<>(postList, HttpStatus.OK);
     }
     //작성글 등록
-    @RequestMapping(value = "/posts/create", method = RequestMethod.POST)
+    @RequestMapping(value = "/posts", method = RequestMethod.POST)
     public ResponseEntity<Long> savePost(@RequestBody PostDto postDto) throws Exception {
         if (postDto.getContent() == null) {
             postDto.setContent("");
@@ -60,7 +60,7 @@ public class dataController {
     }
 
     //글 수정하기
-    @PutMapping(value = "/posts/edit/{postId}")
+    @PutMapping(value = "/posts/{postId}")
     public ResponseEntity<PostDto> updatePost(@RequestBody PostDto postDto, @PathVariable() Long postId) throws Exception {
         postDto.setUpdatedAt(LocalDateTime.now());
         PostDto updatePost =  postService.updatePost(postId, postDto);
@@ -81,10 +81,6 @@ public class dataController {
                                      @PageableDefault(size = 15, sort = "id", direction = Sort.Direction.DESC, value = 1) Pageable pageable) throws Exception {
         return postService.searchBoard(keyword, target, pageable);
     }
-    //검색하기
-//    @GetMapping(value = "/board/search")
-//    public List<BoardDto> searchPost(@RequestParam(value = "keyword")String keyword, @RequestParam(value = "target") String target) throws Exception{
-//        return postService.searchBoard(keyword,target);
-//    }
+
 }
 

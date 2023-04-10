@@ -65,16 +65,7 @@ public class modelAndViewController {
         Pageable pageable = PageRequest.of(page, 15, Sort.Direction.DESC, "id");
         Page<BoardDto> postList = postService.searchBoard(keyword, target, pageable);
         ModelAndView mv = new ModelAndView("/board/home");
-//        Page<BoardDto> postSearchPage = postService.searchBoard(keyword, target, pageable);
         mv.addObject("postList", postList);
         return mv;
     }
-//    //검색 화면
-//    @RequestMapping(value = "/board/search", method = RequestMethod.GET)
-//    public ModelAndView searchKeyword(@RequestParam(value = "keyword")  String keyword, @RequestParam(value = "target") String target) throws Exception {
-//        ModelAndView mv = new ModelAndView("/board/home");
-//        List<BoardDto> postSearchList = postService.searchBoard(keyword,target);
-//        mv.addObject("postList", postSearchList);
-//        return mv;
-//    }
 }

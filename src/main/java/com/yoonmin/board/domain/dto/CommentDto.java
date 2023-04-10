@@ -1,5 +1,6 @@
 package com.yoonmin.board.domain.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.yoonmin.board.domain.entity.PostEntity;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,49 +15,10 @@ import java.time.LocalDateTime;
 public class CommentDto {
     private Long id;
     private String content;
-    private String authorId;
+    private String username;
     private Long postId;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public String getAuthorId() {
-        return authorId;
-    }
-
-    public void setAuthorId(String authorId) {
-        this.authorId = authorId;
-    }
-
-    public Long getPostId() {
-        return postId;
-    }
-
-    public void setPostId(Long postId) {
-        this.postId = postId;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime createdAt;
+    private String password;
 
 }

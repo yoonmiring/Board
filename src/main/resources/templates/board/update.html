@@ -43,7 +43,7 @@
 
             $.ajax({
                 type: "PUT",
-                url: `/api/posts/edit/${post_id}`,
+                url: `/api/posts/${post_id}`,
                 headers: {"X-HTTP-Method-Override": "PUT"},
                 dataType: 'json',
                 contentType: 'application/json; charset=utf-8',

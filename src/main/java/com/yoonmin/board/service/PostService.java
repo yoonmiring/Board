@@ -126,36 +126,4 @@ public class PostService {
                 .hits(postEntity.getHits())
                 .build();
     }
-//    게시글 검색
-//        @Transactional
-//        public List<BoardDto> searchBoard (String keyword, String target){
-//            List<PostEntity> postEntities;
-//
-//            if (target.equals("title")) {
-//                postEntities = postRepository.findByTitleContaining(keyword);
-//            } else if (target.equals("username")) {
-//                postEntities = postRepository.findByUsernameContaining(keyword);
-//            } else {
-//                postEntities = Collections.emptyList();
-//            }
-//
-//            List<BoardDto> postDtoList = new ArrayList<>();
-//
-//            for (PostEntity postEntity : postEntities) {
-//                postDtoList.add(this.convertEntityToDto(postEntity));
-//            }
-//
-//            return postDtoList;
-//        }
-//        private BoardDto convertEntityToDto (PostEntity postEntity){
-//            return BoardDto.builder()
-//                    .id(postEntity.getId())
-//                    .title(postEntity.getTitle())
-//                    .username(postEntity.getUsername())
-//                    .createdAt(postEntity.getCreatedAt())
-//                    .updatedAt(postEntity.getUpdatedAt())
-//                    .hits(postEntity.getHits())
-//                    .build();
-//        }
-
-    }
+}
