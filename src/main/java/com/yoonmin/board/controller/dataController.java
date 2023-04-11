@@ -2,8 +2,10 @@ package com.yoonmin.board.controller;
 
 
 import com.yoonmin.board.domain.dto.BoardDto;
+import com.yoonmin.board.domain.dto.CommentDto;
 import com.yoonmin.board.domain.entity.PostEntity;
 import com.yoonmin.board.domain.repository.PostRepository;
+import com.yoonmin.board.service.CommentService;
 import com.yoonmin.board.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -29,6 +31,9 @@ public class dataController {
     private PostService postService;
     @Autowired
     private PostRepository postRepository;
+    @Autowired
+    private CommentService commentService;
+
 
     //main Board data
     @GetMapping(value = "/board", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -81,6 +86,29 @@ public class dataController {
                                      @PageableDefault(size = 15, sort = "id", direction = Sort.Direction.DESC, value = 1) Pageable pageable) throws Exception {
         return postService.searchBoard(keyword, target, pageable);
     }
+    //댓글조회
+    @GetMapping(value = "/{postId}/comments", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<CommentDto>> list(@PathVariable Long postId) throws Exception {
+        List<CommentDto> commentList= commentService.getCommentListByPostId(postId);
 
+        return new ResponseEntity<List<CommentDto>>(commentList, HttpStatus.OK);
+    }
+
+    //댓글 등록
+    @RequestMapping(value = "/{postId}/comment", method = RequestMethod.POST)
+    public ResponseEntity<Long> saveComment (@RequestBody CommentDto commentDto) throws Exception {
+        if (commentDto.getContent() == null) {
+            commentDto.setContent("");
+        }
+        commentDto.setCreatedAt(LocalDateTime.now());
+        Long postId = commentService.saveComment(commentDto);
+        return new ResponseEntity<>(postId, HttpStatus.CREATED);
+    }
+    //댓글 삭제
+    @DeleteMapping(value = "/{postId}/comment/{commentId}")
+    public String deleteComment (@PathVariable("commentId") Long commentId) throws Exception {
+        commentService.deleteComment(commentId);
+        return "redirect:/posts/{postId}";
+    }
 }
 

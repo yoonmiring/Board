@@ -42,13 +42,26 @@
             </span>
     </div>
     <!--comment부분-->
-    <div>
+    <div class="comments">
         <p> ------------------------------------------------------------------</p>
-        <b>댓글달기</b>
-        이름:<input type="text" name="username">
-        비밀번호:<input type="text" name="password"><br>
-        <textarea name="content" class="comment-text" placeholder="댓글을 입력해 주세요."></textarea>
-        <button type="button" class="btn-comment-save" id="btn-save">등록</button>
+        <form id="postComment" method="postCommnet" action="/post/comment">
+            <b>댓글달기</b>
+            이름:<input type="text" name="username">
+            비밀번호:<input type="text" name="password"><br>
+            <textarea name="content" class="comment-text" placeholder="댓글을 입력해 주세요."></textarea>
+            <button type="button" class="btn-comment-save" id="btn-save">등록</button>
+
+        </form>
+        <p> ------------------------------------------------------------------</p>
+        <ul id="comment-list" class="comment-list">
+                <li id="comment-${CommentDto.id}">
+                    <input type="hidden" name="commentId" value="${CommentDto.id}">
+                    작성자: <a class="comment-username"></a>
+                    (<a class="comment-created-at"></a>)<br>
+                    <a class="comment-content"></a>
+                    <button type="button" class="btn-comment-del" id="btn-comment-del">X</button>
+                </li>
+        </ul>
     </div>
 <!--footer부분-->
 <div th:insert="common/footer.html" id="footer"></div>
@@ -67,6 +80,18 @@
                 $(".post-hits").text(data.hits);
                 $(".post-username").text(data.username);
                 $(".post-content").text(data.content);
+
+                $.ajax({
+                    url: `/api/${post_id}/comments`,
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function(commentList) {
+                        displayComments(commentList);
+                    },
+                    error: function() {
+                        alert('댓글 목록을 가져오는 데 실패했습니다.');
+                    }
+                });
             },
             error: function (xhr, status, error) {
                 console.log(xhr);
@@ -100,6 +125,87 @@
                 success: function (response) {
                     alert('삭제 완료');
                     window.location.href = "/board";
+                },
+                error: function (xhr, status, error) {
+                    console.log(error);
+                }
+            });
+        }
+    });
+
+    // 댓글부분
+    function displayComments(commentList) {
+        const commentUl = $('#comment-list');
+        commentUl.empty();
+        // 댓글이 없을 때
+        if (commentList.length === 0) {
+            comment.append('<p>No comments</p>');
+            return;
+        }
+        for (const comment of commentList) {
+            const commentLi = $('<li>');
+
+            const commentIdInput = $('<input>');
+            commentIdInput.attr('type', 'hidden');
+            commentIdInput.attr('name', 'commentId');
+            commentIdInput.attr('value', comment.id);
+            commentLi.append(commentIdInput);
+
+            const commentUsername = $('<a>');
+            commentUsername.attr('class', 'comment-username');
+            commentUsername.text(comment.username);
+            commentLi.append(commentUsername);
+
+            const commentCreatedAt = $('<span>');
+            commentCreatedAt.attr('class', 'comment-created-at');
+            commentCreatedAt.text(`(${comment.createdAt})`);
+            commentLi.append(commentCreatedAt);
+
+            const commentContent = $('<p>');
+            commentContent.attr('class', 'comment-content');
+            commentContent.text(comment.content);
+            commentLi.append(commentContent);
+
+            const commentDeleteButton = $('<button>');
+            commentDeleteButton.attr('type', 'button');
+            commentDeleteButton.attr('class', 'btn-comment-del');
+            commentDeleteButton.attr('id', 'btn-comment-del');
+            commentDeleteButton.text('X');
+            commentLi.append(commentDeleteButton);
+
+            commentUl.append(commentLi);
+        }
+    }
+    $('#btn-comment-save').on('click', function() {
+            var data = {
+                "username": $('input[name=username]').val(),
+                "password": $('input[name=password]').val(),
+                "content": $('textarea[name=content]').val(),
+            };
+            $.ajax({
+                type:'POST',
+                url:`/${postId}/comment`,
+                dataType:'json',
+                contentType:'application/json; charset=utf-8',
+                data:JSON.stringify(data)
+            }).done(function (){
+                alert('댓글 등록 완료');
+                window.location.href="/board";
+            }).fail(function (error){
+                alert(JSON.stringify(error));
+            });
+        });
+    $("#btn-comment-del").click(function () {
+        var post_id = $("[name=postId]").val();
+        var commentId = $("[namea=commentId]").val();
+        if (confirm('댓글을 삭제하시겠습니까?')) {
+            $.ajax({
+                type: "DELETE",
+                url: `/api/${post_id}/comment/${commentId}`,
+                method: "DELETE",
+                success: function (response) {
+                    alert('삭제 완료');
+                    window.location.href = `/posts/${post_id}`;
                 },
                 error: function (xhr, status, error) {
                     console.log(error);

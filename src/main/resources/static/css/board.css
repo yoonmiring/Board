@@ -83,3 +83,11 @@ textarea {
 .delete-button{
     width:100px;
 }
+
+.comment-list li {
+    display: block;
+    border: 1px solid black; /* 테두리 스타일 설정 */
+    padding: 10px; /* 내부 여백 설정 */
+    margin-bottom: 10px; /* 하단 간격 설정 */
+    list-style-type: none;
+}
