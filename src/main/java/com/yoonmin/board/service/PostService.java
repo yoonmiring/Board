@@ -1,6 +1,7 @@
 package com.yoonmin.board.service;
 
 import com.yoonmin.board.domain.dto.BoardDto;
+import com.yoonmin.board.domain.dto.CommentDto;
 import com.yoonmin.board.domain.dto.PostDto;
 import com.yoonmin.board.domain.entity.PostEntity;
 import com.yoonmin.board.domain.repository.PostRepository;
@@ -11,7 +12,6 @@ import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.Optional;
 
 import javax.persistence.EntityNotFoundException;
@@ -45,65 +45,66 @@ public class PostService {
 
             boardDtoList.add(boardDto);
         }
-
         return new PageImpl<>(boardDtoList, pageable, postEntities.getTotalElements());
     }
 
-        //    개별 게시물 조회
-        @Transactional
-        public PostDto getPost (Long id){
-            Optional<PostEntity> postEntityWrapper = postRepository.findById(id);
-            PostEntity postEntity = postEntityWrapper.get();
-
-            PostDto postDto = PostDto.builder()
-                    .id(postEntity.getId())
-                    .title(postEntity.getTitle())
-                    .content(postEntity.getContent())
-                    .username(postEntity.getUsername())
-                    .createdAt(postEntity.getCreatedAt())
-                    .updatedAt(postEntity.getUpdatedAt())
-                    .hits(postEntity.getHits() + 1)
-                    .build();
-
-            return postDto;
-        }
-//    //조회수 증가
-        @Transactional
-        public void increaseViewCount (Long postId){
-            Optional<PostEntity> postEntityOpt = postRepository.findById(postId);
-            if (postEntityOpt.isPresent()) {
-                postRepository.updateHits(postId);
-            } else {
-                throw new EntityNotFoundException("Post not found");
-            }
-        }
-        //게시물 작성
-        @Transactional
-        public Long savePost (PostDto postDto){
-            return postRepository.save(postDto.toEntity()).getId();
-        }
-
-        //게시글 삭제
-        @Transactional
-        public void deletePost (Long id){
-            postRepository.deleteById(id);
-        }
-
-        //게시물 수정
-        @Transactional
-        public PostDto updatePost (Long id, PostDto postDto){
-            Optional<PostEntity> byId = postRepository.findById(id);
-            PostEntity updatePost = byId.orElseThrow(() -> new EntityNotFoundException("해당 게시글이 존재하지 않습니다."));
-            updatePost.update(postDto.getTitle(), postDto.getContent());
-            updatePost.setUpdatedAt(LocalDateTime.now());
-            return PostDto.builder()
-                    .id(updatePost.getId())
-                    .build();
-        }
-
-//    게시글 검색
+    //    개별 게시물 조회
     @Transactional
-    public Page<BoardDto> searchBoard(String keyword, String target,Pageable pageable) {
+    public PostDto getPost(Long id) {
+        Optional<PostEntity> postEntityWrapper = postRepository.findById(id);
+        PostEntity postEntity = postEntityWrapper.get();
+
+        PostDto postDto = PostDto.builder()
+                .id(postEntity.getId())
+                .title(postEntity.getTitle())
+                .content(postEntity.getContent())
+                .username(postEntity.getUsername())
+                .createdAt(postEntity.getCreatedAt())
+                .updatedAt(postEntity.getUpdatedAt())
+                .hits(postEntity.getHits() + 1)
+                .build();
+
+        return postDto;
+    }
+
+    //조회수 증가
+    @Transactional
+    public void increaseViewCount(Long postId) {
+        Optional<PostEntity> postEntityOpt = postRepository.findById(postId);
+        if (postEntityOpt.isPresent()) {
+            postRepository.updateHits(postId);
+        } else {
+            throw new EntityNotFoundException("Post not found");
+        }
+    }
+
+    //게시물 작성
+    @Transactional
+    public Long savePost(PostDto postDto) {
+        return postRepository.save(postDto.toEntity()).getId();
+    }
+
+    //게시글 삭제
+    @Transactional
+    public void deletePost(Long id) {
+        postRepository.deleteById(id);
+    }
+
+    //게시물 수정
+    @Transactional
+    public PostDto updatePost(Long id, PostDto postDto) {
+        Optional<PostEntity> byId = postRepository.findById(id);
+        PostEntity updatePost = byId.orElseThrow(() -> new EntityNotFoundException("해당 게시글이 존재하지 않습니다."));
+        updatePost.update(postDto.getTitle(), postDto.getContent());
+        updatePost.setUpdatedAt(LocalDateTime.now());
+        return PostDto.builder()
+                .id(updatePost.getId())
+                .build();
+    }
+
+    //    게시글 검색
+    @Transactional
+    public Page<BoardDto> searchBoard(String keyword, String target, Pageable pageable) {
         Page<PostEntity> postEntities;
 
         if (target.equals("title")) {
@@ -116,6 +117,7 @@ public class PostService {
 
         return postEntities.map(this::convertEntityToDto);
     }
+
     private BoardDto convertEntityToDto(PostEntity postEntity) {
         return BoardDto.builder()
                 .id(postEntity.getId())
@@ -126,4 +128,5 @@ public class PostService {
                 .hits(postEntity.getHits())
                 .build();
     }
+
 }
