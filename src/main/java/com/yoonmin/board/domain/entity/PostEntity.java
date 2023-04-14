@@ -39,8 +39,6 @@ public class PostEntity {
     @Column(name = "updated_at", updatable = true)
     private LocalDateTime updatedAt;
 
-
-
     @Builder
     public PostEntity(Long id, String title, String content, String username, Long hits, LocalDateTime createdAt, LocalDateTime updatedAt, String password) {
         this.id = id;

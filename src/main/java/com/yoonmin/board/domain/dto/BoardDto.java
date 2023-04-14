@@ -32,7 +32,6 @@ public class BoardDto {
 
     private String password;
 
-
     public PostEntity toEntity(){
         PostEntity.PostEntityBuilder builder = PostEntity.builder();
         builder.id(id);
