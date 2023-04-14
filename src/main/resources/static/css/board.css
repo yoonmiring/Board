@@ -17,6 +17,15 @@ main{
     position:static;
     width: 100%;
     height: 85%;
+
+}
+.post{
+    margin: 5% 10% 0% 10%;
+}
+.password{
+    padding: 5% 10% 5% 10%;
+    margin: 10% 30% 10% 30%;
+    border : solid 4px #000050;
 }
 .footer{
     width: 100%;
@@ -83,11 +92,30 @@ textarea {
 .delete-button{
     width:100px;
 }
+#postComment{
 
+}
 .comment-list li {
     display: block;
     border: 1px solid black; /* 테두리 스타일 설정 */
     padding: 10px; /* 내부 여백 설정 */
     margin-bottom: 10px; /* 하단 간격 설정 */
     list-style-type: none;
+}
+/*구분선*/
+.division-line{
+    border-top: 2px solid #000050;
+    margin: 30px 0px;
+}
+.edit-delete-button{
+    text-align: center;
+}
+.edit-button{
+    float:left;
+}
+.delete-button{
+    float:left;
+}
+.comments{
+    clear: both;
 }

@@ -10,59 +10,57 @@
 <!--haeder부분-->
 <div th:insert="common/header.html" id="header"></div>
 
-    <!--post부분-->
-    <div class="board">
-        <div>
-            <input type="hidden" name="postId" th:value="${PostDto.id}"/>
-            <h2 class="post-title"></h2>
-            작성일자: <a class="post-created-at"></a>
-            (<a class="post-updated-at"></a>)<br>
-            조회수: <a class="post-hits"><span id="view-count"></span></a>
-            작성자: <a class="post-username"></a>
-            <p> ------------------------------------------------------------------</p>
-            <p class="post-content"></p>
-            <p> ------------------------------------------------------------------</p>
-        </div>
+<!--post부분-->
+<div class="post">
+    <div>
+        <input type="hidden" name="postId" th:value="${PostDto.id}"/>
+        <h1 class="post-title"></h1>
+        작성일자: <a class="post-created-at"></a>
+        (<a class="post-updated-at"></a>)<br>
+        조회수: <a class="post-hits"><span id="view-count"></span></a>
+        작성자: <a class="post-username"></a>
+        <div class="division-line"></div>
+        <p class="post-content"></p>
 
     </div>
     <!-- 수정/삭제 -->
-    <div>
-            <span class="edit-button">
-            <form th:action="@{'edit/' + ${PostDto.id}}" method="get">
-                <button type="submit">수정</button>
-            </form>
-            </span>
-            <span class="delete-button">
+    <div class="edit-delete-button">
+        <span class="edit-button">
+             <form th:action="@{'edit/' + ${PostDto.id} + '/password'}" method="get">
+                 <button type="submit" class="edit-btn">수정</button>
+             </form>
+        </span>
+        <span class="delete-button">
             <form th:action="@{'/posts' + ${PostDto.id}}" method="post">
                 <input type="hidden" name="_method" value="delete"/>
                 <input type="hidden" name="postId" th:value="${PostDto.id}"/>
-
                 <button type="button" class="btn-delete" id="btn-delete">삭제</button>
             </form>
-            </span>
+        </span>
     </div>
     <!--comment부분-->
     <div class="comments">
-        <p> ------------------------------------------------------------------</p>
-        <form id="postComment" method="postCommnet" action="/post/comment">
+        <div class="division-line"></div>
+        <form id="postComment" method="POST" action="/post/comment">
             <b>댓글달기</b>
             이름:<input type="text" name="username">
             비밀번호:<input type="text" name="password"><br>
             <textarea name="content" class="comment-text" placeholder="댓글을 입력해 주세요."></textarea>
             <button type="button" class="btn-comment-save" id="btn-save">등록</button>
-
         </form>
-        <p> ------------------------------------------------------------------</p>
         <ul id="comment-list" class="comment-list">
-                <li id="comment-${CommentDto.id}">
-                    <input type="hidden" name="commentId" value="${CommentDto.id}">
-                    작성자: <a class="comment-username"></a>
-                    (<a class="comment-created-at"></a>)<br>
-                    <a class="comment-content"></a>
+            <li th:each="comment : ${comments}" th:id="'comment-' + ${comment.id}" name="commentId">
+                <div th:with="commentDto=${comment}">
+                    작성자: <a class="comment-username" th:text="${commentDto.username}"></a>
+                    (<a class="comment-created-at" th:text="${commentDto.createdAt}"></a>)<br>
+                    <a class="comment-content" th:text="${commentDto.content}"></a>
+                    <input type="hidden" name="commentId" th:value="${commentDto.id}"/>
                     <button type="button" class="btn-comment-del" id="btn-comment-del">X</button>
-                </li>
+                </div>
+            </li>
         </ul>
     </div>
+</div>
 <!--footer부분-->
 <div th:insert="common/footer.html" id="footer"></div>
 
@@ -85,10 +83,10 @@
                     url: `/api/${post_id}/comments`,
                     method: 'GET',
                     dataType: 'json',
-                    success: function(commentList) {
+                    success: function (commentList) {
                         displayComments(commentList);
                     },
-                    error: function() {
+                    error: function () {
                         alert('댓글 목록을 가져오는 데 실패했습니다.');
                     }
                 });
@@ -99,22 +97,47 @@
                 console.log(error);
             }
         });
-    });
-    $("#edit-form").submit(function (event) {
-
-        $.ajax({
-            url: `/api/posts/edit/${id}`,
-            method: "GET",
-            success: function (response) {
-                $("#post-title").val(response.title);
-                $("#post-writer").val(response.writer);
-                $("#post-content").val(response.content);
-            },
-            error: function (xhr, status, error) {
-                console.log(error);
-            }
+        $("#btn-save").click(function () {
+            // 사용자가 입력한 댓글 정보
+            var data = {
+                "postId": $("[name=postId]").val(),
+                "username": $("input[name='username']").val(),
+                "password": $("input[name='password']").val(),
+                "content": $("textarea[name='content']").val()
+            };
+            // 댓글 정보를 서버로 전송하기 위한 AJAX 요청
+            $.ajax({
+                url: `/api/${post_id}/comment/`,
+                type: "POST",
+                dataType: "json",
+                contentType: 'application/json; charset=utf-8',
+                data: JSON.stringify(data),
+                success: function (response) {
+                    alert("댓글이 등록되었습니다.");
+                    // 등록한 댓글을 화면에 바로 반영하도록 새로고침
+                    location.reload();
+                },
+                error: function (xhr, status, error) {
+                    alert("댓글 등록에 실패했습니다.");
+                    console.log(xhr, status, error);
+                }
+            });
         });
     });
+    // $("#edit-form").submit(function (event) {
+    //     $.ajax({
+    //         url: `/api/posts/edit/${id}`,
+    //         method: "GET",
+    //         success: function (response) {
+    //             $("#post-title").val(response.title);
+    //             $("#post-writer").val(response.writer);
+    //             $("#post-content").val(response.content);
+    //         },
+    //         error: function (xhr, status, error) {
+    //             console.log(error);
+    //         }
+    //     });
+    // });
     $("#btn-delete").click(function () {
         var post_id = $("[name=postId]").val();
         if (confirm('게시물을 삭제하시겠습니까?')) {
@@ -139,18 +162,15 @@
         commentUl.empty();
         // 댓글이 없을 때
         if (commentList.length === 0) {
-            comment.append('<p>No comments</p>');
+            commentUl.append('<p>No comments</p>');
             return;
         }
-        for (const comment of commentList) {
+        commentList.forEach(function (comment) {
             const commentLi = $('<li>');
+            commentLi.attr('id', 'comment-' + comment.id);
+            commentLi.attr('name', 'commentId');
 
-            const commentIdInput = $('<input>');
-            commentIdInput.attr('type', 'hidden');
-            commentIdInput.attr('name', 'commentId');
-            commentIdInput.attr('value', comment.id);
-            commentLi.append(commentIdInput);
-
+            const commentDiv = $('<div>');
             const commentUsername = $('<a>');
             commentUsername.attr('class', 'comment-username');
             commentUsername.text(comment.username);
@@ -161,58 +181,47 @@
             commentCreatedAt.text(`(${comment.createdAt})`);
             commentLi.append(commentCreatedAt);
 
-            const commentContent = $('<p>');
+            commentDiv.append('<br>');
+            const commentContent = $('<a>');
             commentContent.attr('class', 'comment-content');
             commentContent.text(comment.content);
-            commentLi.append(commentContent);
+            commentDiv.append(commentContent);
+
+            const commentIdInput = $('<input>');
+            commentIdInput.attr('type', 'hidden');
+            commentIdInput.attr('name', 'commentId');
+            commentIdInput.attr('value', comment.id);
+            commentDiv.append(commentIdInput);
 
             const commentDeleteButton = $('<button>');
             commentDeleteButton.attr('type', 'button');
             commentDeleteButton.attr('class', 'btn-comment-del');
             commentDeleteButton.attr('id', 'btn-comment-del');
             commentDeleteButton.text('X');
-            commentLi.append(commentDeleteButton);
+            commentDeleteButton.click(() => {
+                if (confirm('댓글을 삭제하시겠습니까?')) {
+                    var post_id = $("[name=postId]").val();
+                    var comment_id = comment.id;
 
-            commentUl.append(commentLi);
-        }
-    }
-    $('#btn-comment-save').on('click', function() {
-            var data = {
-                "username": $('input[name=username]').val(),
-                "password": $('input[name=password]').val(),
-                "content": $('textarea[name=content]').val(),
-            };
-            $.ajax({
-                type:'POST',
-                url:`/${postId}/comment`,
-                dataType:'json',
-                contentType:'application/json; charset=utf-8',
-                data:JSON.stringify(data)
-            }).done(function (){
-                alert('댓글 등록 완료');
-                window.location.href="/board";
-            }).fail(function (error){
-                alert(JSON.stringify(error));
-            });
-        });
-    $("#btn-comment-del").click(function () {
-        var post_id = $("[name=postId]").val();
-        var commentId = $("[namea=commentId]").val();
-        if (confirm('댓글을 삭제하시겠습니까?')) {
-            $.ajax({
-                type: "DELETE",
-                url: `/api/${post_id}/comment/${commentId}`,
-                method: "DELETE",
-                success: function (response) {
-                    alert('삭제 완료');
-                    window.location.href = `/posts/${post_id}`;
-                },
-                error: function (xhr, status, error) {
-                    console.log(error);
+                    $.ajax({
+                        type: "DELETE",
+                        url: `/api/${post_id}/comment/${comment_id}`,
+                        success: function (response) {
+                            alert('댓글 삭제 완료');
+                            window.location.href = `/posts/${post_id}`;
+                        },
+                        error: function (xhr, status, error) {
+                            console.log(error);
+                        }
+                    });
                 }
             });
-        }
-    });
+            commentLi.append(commentDeleteButton);
+
+            commentLi.append(commentDiv);
+            commentUl.append(commentLi);
+        });
+    }
 </script>
 </body>
 </html>

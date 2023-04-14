@@ -11,7 +11,7 @@
 <div th:insert="common/header.html" id="header"></div>
 
 
-<div class="board">
+<div class="post">
     <form th:action="@{'/post/edit/' + ${PostDto.id}}" method="post">
         <input type="hidden" name="_method" value="put"/>
         <input type="hidden" name="postId" th:value="${PostDto.id}"/>

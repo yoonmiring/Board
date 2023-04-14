@@ -12,14 +12,14 @@
 <div th:insert="common/header.html" id="header"></div>
 
 <!--body부분-->
-<div class="board">
+<div class="post">
 
 <!--    입력 부분 -->
     <form id="postForm" action="/board/posts/create" method="POST">
         제목:<input type="text" name="title"> <br>
         작성자:<input type="text" name="username">
         비밀번호:<input type="text" name="password"><br>
-        -----------------------------------------------------------------------------<br>
+        <div class="division-line"></div>
         <textarea name="content" placeholder="내용을 입력해 주세요." ></textarea> <br>
     </form>
     <a th:href="@{/board}" role="button" class="btn-cancle">취소</a>
