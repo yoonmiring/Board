@@ -77,39 +77,13 @@
         $searchButton.click(function () {
             const keyword = $keyword.val();
             const target = $searchTarget.val();
-
-            if (target === 'title') { // 제목으로 검색
-                searchByTitle(keyword, page);
-            } else if (target === 'username') { // 작성자로 검색
-                searchByUsername(keyword, page);
-            }
+            search(target, keyword, page);
         });
 
-        function searchByTitle(keyword, page) {
-            $.ajax({
-                url: `/api/board/search?keyword=${keyword}&target=title&page=${page}`,
-                type: "GET",
-                success: function (data) {
-                    const tableBody = $('#table-body');
-                    tableBody.empty();
-                    if (data.length === 0) {
-                        const row = $('<tr>');
-                        const cell = $('<td>').attr('colspan', 6).text('검색 결과가 없습니다.');
-                        row.append(cell);
-                        tableBody.append(row);
+        function search(target, keyword, page) {
 
-                    } else { // 검색 결과가 있는 경우
-                        const tableRows = data.content.map((rowData) => createTableRow(rowData));
-                        tableRows.forEach((row) => tableBody.append(row));
-                        renderPagination(data);
-                    }
-                }
-            });
-        }
-
-        function searchByUsername(keyword, page) {
             $.ajax({
-                url: `/api/board/search?keyword=${keyword}&target=username&page=${page}`,
+                url: `/api/board/search?target=${target}&keyword=${keyword}&page=${page}`,
                 type: "GET",
                 success: function (data) {
                     const tableBody = $('#table-body');

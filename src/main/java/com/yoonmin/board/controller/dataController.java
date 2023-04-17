@@ -92,16 +92,16 @@ public class dataController {
 
         return new ResponseEntity<List<CommentDto>>(commentList, HttpStatus.OK);
     }
-
     //댓글 등록
     @RequestMapping(value = "/{postId}/comment", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Long> saveComment (@RequestBody CommentDto commentDto) throws Exception {
+    public ResponseEntity<Long> saveComment (@PathVariable Long postId,@RequestBody CommentDto commentDto) throws Exception {
         if (commentDto.getContent() == null) {
             commentDto.setContent("");
         }
         commentDto.setCreatedAt(LocalDateTime.now());
-        Long postId = commentService.saveComment(commentDto);
-        return new ResponseEntity<>(postId, HttpStatus.CREATED);
+        commentDto.setPostId(postId);
+        Long commentId = commentService.saveComment(commentDto);
+        return new ResponseEntity<>(commentId, HttpStatus.CREATED);
     }
     //댓글 삭제
     @DeleteMapping(value = "/{postId}/comment/{commentId}")
