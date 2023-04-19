@@ -2,7 +2,7 @@
 게시판 만들기 프로젝트
 
 
-### MYSQL 테이블 생성 코드
+## MYSQL 테이블 생성 코드
 
 create DATABASE board;
 show databases;
@@ -48,7 +48,7 @@ REFERENCES post (id) ON DELETE RESTRICT ON UPDATE RESTRICT;
 -- ALTER TABLE comment
 -- DROP FOREIGN KEY FK_comment_post_id_post_id;
 
-### 데이터 한번에 집어 넣는 sql문
+## 데이터 한번에 집어 넣는 sql문
 
 
 DELIMITER //
