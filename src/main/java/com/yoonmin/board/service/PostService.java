@@ -6,7 +6,8 @@ import com.yoonmin.board.domain.dto.PostDto;
 import com.yoonmin.board.domain.entity.PostEntity;
 import com.yoonmin.board.domain.repository.PostRepository;
 import lombok.AllArgsConstructor;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
@@ -19,14 +20,13 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @AllArgsConstructor
 @Service
 public class PostService {
 
     private final PostRepository postRepository;
 
-
+    private final BCryptPasswordEncoder passwordEncoder;
     //전체 게시물 조회
     @Transactional
     public Page<BoardDto> getPostlist(Pageable pageable) {
@@ -62,6 +62,7 @@ public class PostService {
                 .createdAt(postEntity.getCreatedAt())
                 .updatedAt(postEntity.getUpdatedAt())
                 .hits(postEntity.getHits() + 1)
+//                .password(postEntity.getPassword())
                 .build();
 
         return postDto;
@@ -81,6 +82,8 @@ public class PostService {
     //게시물 작성
     @Transactional
     public Long savePost(PostDto postDto) {
+        String hashedPassword = passwordEncoder.encode(postDto.getPassword());
+        postDto.setPassword(hashedPassword);
         return postRepository.save(postDto.toEntity()).getId();
     }
 
@@ -128,5 +131,18 @@ public class PostService {
                 .hits(postEntity.getHits())
                 .build();
     }
+    // 저장된 해시값과 입력받은 비밀번호를 비교
+    public boolean checkPassword(PostDto postDto, String inputPassword) {
+        // 저장된 해시값과 입력받은 비밀번호를 비교
+        String password = postDto.getPassword();
+
+        System.out.println("postDto: "+postDto);
+        System.out.println("입력받은 비밀번호 비밀번호 해시하여 저장1 : " + password);
+        System.out.println("입력받은 비밀번호 비밀번호 해시하여 저장2 : " + inputPassword);
+
+        return passwordEncoder.matches(inputPassword, password);
+    }
+
+
 
 }

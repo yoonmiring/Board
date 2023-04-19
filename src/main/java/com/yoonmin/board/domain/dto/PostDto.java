@@ -33,7 +33,7 @@ public class PostDto {
 
     private Long hits;
 
-    private String password;
+    private String password = "";
 
     public PostEntity toEntity(){
         PostEntity.PostEntityBuilder builder = PostEntity.builder();

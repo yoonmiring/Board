@@ -57,10 +57,10 @@ public class dataController {
     //게시글 상세보기
     @GetMapping(value = "/posts/{postId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<PostDto> getPost(@PathVariable Long postId) throws Exception {
-        PostDto postDTO = postService.getPost(postId);
+        PostDto postDto = postService.getPost(postId);
         // increase view count
         postService.increaseViewCount(postId);
-        return new ResponseEntity<PostDto>(postDTO, HttpStatus.OK);
+        return new ResponseEntity<PostDto>(postDto, HttpStatus.OK);
     }
 
     //글 수정하기
@@ -109,45 +109,15 @@ public class dataController {
         commentService.deleteComment(commentId);
         return "redirect:/posts/{postId}";
     }
-//    비밀번호 일치 여부
-    @PostMapping("/posts/{post_id}/verify-password")
+    //    비밀번호 일치 여부
+    @PostMapping("/posts/edit/{postId}/password")
     @ResponseBody
-    public Map<String, Object> verifyPassword(
-            @PathVariable("post_id") Long postId,
-            @RequestParam("password") String inputPassword
-    ) {
-        PostDto postDTO = postService.getPost(postId);
-
-        Map<String, Object> result = new HashMap<>();
-
-        if (postDTO == null) {
-            result.put("success", false);
-        } else {
-            boolean passwordMatched = Objects.equals(postDTO.getPassword(), inputPassword);
-            if (passwordMatched) {
-                result.put("success", true);
-            } else {
-                result.put("success", false);
-            }
-        }
-        return result;
+    public boolean checkPassword(@PathVariable Long postId,  @RequestBody Map<String, Object> requestData) {
+        String password = (String) requestData.get("password");
+        // 게시물 ID로 게시물 정보 조회
+        PostDto postDto = postService.getPost(postId);
+        // 입력받은 비밀번호와 저장된 해시값 비교
+        return postService.checkPassword(postDto, password);
     }
-//    @PostMapping("/posts/{post_id}/verify-password")
-//    @ResponseBody
-//    public ResponseEntity<Map<String, Object>> verifyPassword(
-//            @PathVariable("post_id") Long postId,
-//            @RequestParam("password") String inputPassword
-//    ) {
-//        PostDto postDTO = postService.getPost(postId);
-//        boolean passwordMatched = false;
-//        if (postDTO != null && postDTO.getPassword() != null) {
-//            passwordMatched = postDTO.getPassword().equals(inputPassword);
-//        }
-//        Map<String, Object> result = new HashMap<>();
-//        result.put("success", passwordMatched);
-//
-//        HttpStatus status = passwordMatched ? HttpStatus.OK : HttpStatus.UNAUTHORIZED;
-//        return new ResponseEntity<>(result, status);
-//    }
 }
 

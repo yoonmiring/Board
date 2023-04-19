@@ -35,5 +35,4 @@ public class CommentEntity {
         this.createdAt = createdAt;
         this.password = password;
     }
-
 }
